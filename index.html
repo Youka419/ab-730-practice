@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AB-730 模擬問題集 — AI Business Professional</title>
+  <style>
+    :root {
+      --bg: #f3f3f3;
+      --surface: #ffffff;
+      --text: #242424;
+      --muted: #616161;
+      --line: #e0e0e0;
+      --accent: #0f6cbd;
+      --accent-hover: #115ea3;
+      --accent-soft: #e6f2fb;
+      --ok: #0e7c3a;
+      --ok-bg: #e7f6ec;
+      --ng: #c50f1f;
+      --ng-bg: #fde7e9;
+      --warn: #c47d00;
+      --warn-bg: #fff4ce;
+      --radius: 10px;
+      --shadow: 0 1px 3px rgba(0,0,0,.08), 0 8px 24px rgba(0,0,0,.04);
+      --font: "Segoe UI", "Yu Gothic UI", "Yu Gothic", Meiryo, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; background: var(--bg); color: var(--text); font-family: var(--font); }
+    button, input { font-family: inherit; }
+    button { cursor: pointer; }
+    .wrap { max-width: 920px; margin: 0 auto; padding: 28px 20px 64px; }
+
+    header.app {
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      margin-bottom: 24px;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .logo {
+      width: 36px; height: 36px; border-radius: 8px; background: var(--accent);
+      display: grid; place-items: center; color: #fff; font-weight: 700; font-size: 13px;
+    }
+    .brand h1 { font-size: 18px; margin: 0; font-weight: 650; }
+    .brand p { margin: 2px 0 0; color: var(--muted); font-size: 12px; }
+
+    .card {
+      background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+      box-shadow: var(--shadow); margin-bottom: 16px;
+    }
+    .sec-title {
+      display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
+      padding: 18px 24px 0;
+    }
+    .sec-title h2 { margin: 0; font-size: 16px; font-weight: 650; }
+    .sec-title p { margin: 0; color: var(--muted); font-size: 12px; }
+
+    .hero { padding: 28px 28px 12px; }
+    .hero h2 { margin: 0 0 8px; font-size: 24px; font-weight: 650; }
+    .hero p { margin: 0; color: var(--muted); line-height: 1.6; font-size: 14px; }
+
+    .meta {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+      padding: 16px 28px 8px;
+    }
+    .meta.four { grid-template-columns: repeat(4, 1fr); }
+    .meta div, .stats div {
+      background: #fafafa; border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px;
+    }
+    .meta dt, .stats dt { font-size: 11px; color: var(--muted); margin: 0 0 4px; }
+    .meta dd, .stats dd { margin: 0; font-weight: 650; font-size: 15px; }
+
+    .modes { display: grid; gap: 12px; padding: 16px 28px 8px; }
+    .mode {
+      text-align: left; background: #fff; border: 1px solid var(--line); border-radius: 10px;
+      padding: 16px 18px; display: grid; grid-template-columns: 1fr auto; gap: 8px 16px;
+      align-items: center; transition: border-color .15s, background .15s;
+    }
+    .mode:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-soft); }
+    .mode:disabled { opacity: .45; cursor: default; }
+    .mode strong { font-size: 16px; }
+    .mode span { grid-column: 1; color: var(--muted); font-size: 13px; line-height: 1.5; }
+    .mode em { font-style: normal; color: var(--accent); font-weight: 650; font-size: 13px; }
+    .mode.danger em { color: var(--ng); }
+
+    .domains { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 12px 28px 24px; }
+    .dcard {
+      text-align: left; border: 1px solid var(--line); background: #fff; border-radius: 10px;
+      padding: 14px; display: grid; gap: 8px;
+    }
+    .dcard:hover { border-color: var(--accent); }
+    .dcard .k { font-size: 11px; color: var(--muted); }
+    .dcard strong { font-size: 14px; }
+    .dcard .pct { font-size: 20px; font-weight: 700; }
+    .dcard .pct.ok { color: var(--ok); }
+    .dcard .pct.mid { color: var(--accent); }
+    .dcard .pct.bad { color: var(--ng); }
+    .dcard .sub { font-size: 12px; color: var(--muted); }
+
+    .note { padding: 0 28px 20px; font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+    .callout {
+      margin: 12px 28px 20px; padding: 14px 16px; border-radius: 8px;
+      background: var(--warn-bg); border: 1px solid #e6c35c;
+      display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;
+    }
+    .callout.ok { background: var(--ok-bg); border-color: #8fd0a8; }
+    .callout b { display: block; margin-bottom: 4px; }
+    .callout p { margin: 0; font-size: 13px; line-height: 1.5; }
+
+    .bar {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      padding: 14px 18px; border-bottom: 1px solid var(--line);
+    }
+    .bar .left, .bar .right { display: flex; align-items: center; gap: 10px; }
+    .pill {
+      font-size: 12px; background: var(--accent-soft); color: var(--accent); border-radius: 999px;
+      padding: 4px 10px; font-weight: 650;
+    }
+    .timer { font-variant-numeric: tabular-nums; font-weight: 650; font-size: 14px; }
+    .timer.warn { color: var(--warn); }
+    .timer.danger { color: var(--ng); }
+    .progress { height: 4px; background: #eee; }
+    .progress > i { display: block; height: 100%; background: var(--accent); width: 0; }
+
+    .qwrap { padding: 24px 28px 8px; }
+    .qnum { color: var(--muted); font-size: 12px; margin-bottom: 8px; }
+    .qtext { font-size: 18px; line-height: 1.55; margin: 0 0 8px; font-weight: 600; }
+    .hint { font-size: 12px; color: var(--muted); margin-bottom: 16px; }
+    .opts { display: grid; gap: 8px; }
+    .opt {
+      display: grid; grid-template-columns: 28px 1fr; gap: 10px; align-items: start;
+      border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; background: #fff;
+      text-align: left;
+    }
+    .opt:hover:not(:disabled) { border-color: var(--accent); }
+    .opt .mark {
+      width: 22px; height: 22px; border-radius: 50%; border: 2px solid #c8c8c8;
+      display: grid; place-items: center; font-size: 11px; font-weight: 700; color: var(--muted);
+      margin-top: 1px;
+    }
+    .opt.selected { border-color: var(--accent); background: var(--accent-soft); }
+    .opt.selected .mark { border-color: var(--accent); background: var(--accent); color: #fff; }
+    .opt.correct { border-color: var(--ok); background: var(--ok-bg); }
+    .opt.correct .mark { border-color: var(--ok); background: var(--ok); color: #fff; }
+    .opt.wrong { border-color: var(--ng); background: var(--ng-bg); }
+    .opt.wrong .mark { border-color: var(--ng); background: var(--ng); color: #fff; }
+    .opt:disabled { cursor: default; }
+
+    .explain {
+      margin: 16px 28px 0; padding: 14px 16px; border-radius: 8px;
+      background: #f7f7f7; border: 1px solid var(--line); font-size: 14px; line-height: 1.65;
+      display: none;
+    }
+    .explain.show { display: block; }
+    .explain b { display: block; margin-bottom: 6px; }
+
+    .nav {
+      display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between; align-items: center;
+      padding: 20px 28px 24px;
+    }
+    .nav .btns { display: flex; flex-wrap: wrap; gap: 8px; }
+    .btn {
+      border: 1px solid var(--line); background: #fff; border-radius: 6px; padding: 9px 14px;
+      font-size: 14px;
+    }
+    .btn:hover:not(:disabled) { background: #f5f5f5; }
+    .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .btn.primary:hover:not(:disabled) { background: var(--accent-hover); }
+    .btn.ghost { background: transparent; }
+    .btn:disabled { opacity: .45; cursor: default; }
+
+    .map { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 28px 24px; }
+    .dot {
+      width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--line);
+      background: #fff; font-size: 11px; font-weight: 650;
+    }
+    .dot.current { outline: 2px solid var(--accent); outline-offset: 1px; }
+    .dot.answered { background: var(--accent-soft); border-color: #b4d6f3; }
+    .dot.flagged { background: #fff4ce; border-color: #e6c35c; }
+    .dot.ok { background: var(--ok-bg); border-color: #8fd0a8; }
+    .dot.ng { background: var(--ng-bg); border-color: #f3a0a8; }
+
+    .scorebox { padding: 32px 28px 12px; text-align: center; }
+    .scorebox .label { color: var(--muted); font-size: 13px; }
+    .score {
+      font-size: 56px; font-weight: 700; letter-spacing: -1px; line-height: 1.1; margin: 8px 0;
+    }
+    .score.pass { color: var(--ok); }
+    .score.fail { color: var(--ng); }
+    .verdict {
+      display: inline-block; border-radius: 999px; padding: 6px 14px; font-weight: 650; font-size: 14px;
+    }
+    .verdict.pass { background: var(--ok-bg); color: var(--ok); }
+    .verdict.fail { background: var(--ng-bg); color: var(--ng); }
+    .stats {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 20px 28px;
+    }
+    .domain-bars { padding: 0 28px 8px; display: grid; gap: 12px; }
+    .drow { font-size: 13px; }
+    .drow .lab { display: flex; justify-content: space-between; margin-bottom: 6px; }
+    .track { height: 8px; background: #eee; border-radius: 99px; overflow: hidden; }
+    .track > i { display: block; height: 100%; background: var(--accent); }
+    .track > i.ok { background: var(--ok); }
+    .track > i.bad { background: var(--ng); }
+
+    .hist { padding: 12px 24px 20px; overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--line); }
+    th { color: var(--muted); font-weight: 650; font-size: 11px; }
+    td.num { font-variant-numeric: tabular-nums; font-weight: 650; }
+    .tag {
+      display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 999px;
+      background: #f3f3f3; color: var(--muted);
+    }
+    .acc-ok { color: var(--ok); }
+    .acc-bad { color: var(--ng); }
+    .empty-hint { padding: 8px 28px 24px; color: var(--muted); font-size: 13px; }
+    .header-actions { display: flex; gap: 8px; align-items: center; }
+    .help-body { padding: 8px 28px 28px; }
+    .help-body h3 { font-size: 15px; margin: 22px 0 8px; }
+    .help-body p { margin: 0 0 10px; color: var(--muted); font-size: 14px; line-height: 1.7; }
+    .help-body ol, .help-body ul { margin: 0 0 12px; padding-left: 1.3em; }
+    .help-body li { margin: 4px 0; font-size: 14px; line-height: 1.7; }
+    .help-body .kbd {
+      display: inline-block; border: 1px solid var(--line); background: #fafafa;
+      border-radius: 4px; padding: 0 6px; font-size: 12px;
+    }
+    .help-jump { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 28px 8px; }
+
+    .hidden { display: none !important; }
+    footer { margin-top: 8px; color: var(--muted); font-size: 11px; line-height: 1.6; text-align: center; }
+
+    @media (max-width: 720px) {
+      .meta, .meta.four, .stats, .domains { grid-template-columns: 1fr; }
+      .hero, .qwrap, .nav { padding-left: 16px; padding-right: 16px; }
+      .qtext { font-size: 16px; }
+      .score { font-size: 44px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="app">
+      <div class="brand">
+        <div class="logo">AB</div>
+        <div>
+          <h1>AB-730 模擬問題集</h1>
+          <p>Microsoft Certified: AI Business Professional</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="btn" type="button" id="btnHelp">ヘルプ</button>
+        <button class="btn ghost hidden" id="btnHome" type="button">ホームへ</button>
+      </div>
+    </header>
+
+    <div id="home">
+      <section class="card">
+        <div class="hero">
+          <h2>学習ダッシュボード</h2>
+          <p>出題順と選択肢は毎回シャッフルされます。正解率は履歴に残り、弱点分野の再出題と誤答復習に使います。手順は右上のヘルプを開いて確認できます。</p>
+        </div>
+        <dl class="meta four" id="overviewMeta"></dl>
+        <div id="weakCallout"></div>
+      </section>
+
+      <section class="card">
+        <div class="sec-title">
+          <h2>出題する</h2>
+          <p>全モードで問題順・選択肢をシャッフル</p>
+        </div>
+        <div class="modes">
+          <button class="mode" type="button" id="btnExam">
+            <strong>試験模擬</strong>
+            <em>50問 / 45分</em>
+            <span>本番形式。タイマーあり。解説は採点後に確認できます。</span>
+          </button>
+          <button class="mode" type="button" id="btnStudy">
+            <strong>学習モード（全問シャッフル）</strong>
+            <em>解説つき</em>
+            <span>50問をランダム順で出題します。1問ごとに正誤と解説を表示します。</span>
+          </button>
+          <button class="mode" type="button" id="btnShuffle">
+            <strong>シャッフル 20 問</strong>
+            <em>短時間</em>
+            <span>全分野から 20 問を無作為抽出します。スキマ時間の確認用です。</span>
+          </button>
+          <button class="mode" type="button" id="btnMissed">
+            <strong>間違えた問題を復習</strong>
+            <em id="missedBadge">0問</em>
+            <span>これまでに間違えた問題だけを、選択肢を入れ替えて再出題します。正解すると復習リストから外れます。</span>
+          </button>
+          <button class="mode" type="button" id="btnWeak">
+            <strong>弱点分野を再出題</strong>
+            <em>分析連動</em>
+            <span>累計正解率が最も低い分野を優先し、誤答を先に出します。</span>
+          </button>
+        </div>
+        <p class="note" style="padding-top:8px">本問題は公式試験の再現ではありません。合格点 700/1000 は簡易換算（正答率 × 1000）です。</p>
+      </section>
+
+      <section class="card">
+        <div class="sec-title">
+          <h2>分野別出題</h2>
+          <p>累計正解率をクリックしてその分野だけ解く</p>
+        </div>
+        <div class="domains" id="domainCards"></div>
+      </section>
+
+      <section class="card">
+        <div class="sec-title">
+          <h2>弱点分野の分析</h2>
+          <p>履歴の全回答から集計</p>
+        </div>
+        <div class="domain-bars" id="analysisBars" style="padding:16px 28px 8px"></div>
+        <p class="empty-hint hidden" id="analysisEmpty">まだ回答履歴がありません。1回解くと分野別の正解率が出ます。</p>
+        <div class="nav" style="padding-top:8px">
+          <span></span>
+          <button class="btn" type="button" id="btnWeakFromAnalysis">弱点分野を出題</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="sec-title">
+          <h2>履歴</h2>
+          <p id="histCount">直近の受験</p>
+        </div>
+        <div class="hist" id="histTable"></div>
+        <div class="nav" style="padding-top:0">
+          <button class="btn" type="button" id="btnClearHist">履歴を削除</button>
+          <span></span>
+        </div>
+      </section>
+    </div>
+
+    <section id="quiz" class="card hidden">
+      <div class="bar">
+        <div class="left">
+          <span class="pill" id="modePill"></span>
+          <span class="pill" id="domainPill"></span>
+        </div>
+        <div class="right">
+          <span class="timer" id="timer"></span>
+        </div>
+      </div>
+      <div class="progress"><i id="prog"></i></div>
+      <div class="qwrap">
+        <div class="qnum" id="qnum"></div>
+        <p class="qtext" id="qtext"></p>
+        <div class="hint" id="qhint"></div>
+        <div class="opts" id="opts"></div>
+      </div>
+      <div class="explain" id="explain"></div>
+      <div class="nav">
+        <div class="btns">
+          <button class="btn" type="button" id="btnPrev">前へ</button>
+          <button class="btn" type="button" id="btnFlag">フラグ</button>
+        </div>
+        <div class="btns">
+          <button class="btn" type="button" id="btnCheck">解答を確認</button>
+          <button class="btn primary" type="button" id="btnNext">次へ</button>
+        </div>
+      </div>
+      <div class="map" id="map"></div>
+    </section>
+
+    <section id="result" class="card hidden">
+      <div class="scorebox">
+        <div class="label">換算スコア（1000点満点）</div>
+        <div class="score" id="scoreNum">0</div>
+        <div class="verdict" id="verdict"></div>
+        <p id="scoreSub" style="color:var(--muted);font-size:14px;margin:12px 0 0"></p>
+      </div>
+      <dl class="stats">
+        <div><dt>正答</dt><dd id="statCorrect"></dd></div>
+        <div><dt>所要時間</dt><dd id="statTime"></dd></div>
+        <div><dt>合格ライン</dt><dd>700</dd></div>
+      </dl>
+      <div class="domain-bars" id="domainBars"></div>
+      <div id="resultWeak"></div>
+      <div class="nav">
+        <div class="btns">
+          <button class="btn" type="button" id="btnReviewWrong">今回の誤答を見直す</button>
+          <button class="btn" type="button" id="btnRetryMissed">誤答をシャッフル再出題</button>
+        </div>
+        <div class="btns">
+          <button class="btn" type="button" id="btnResultWeak">弱点分野を出題</button>
+          <button class="btn primary" type="button" id="btnRetry">同じ条件でもう一度</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="help" class="card hidden">
+      <div class="hero">
+        <h2>ヘルプ — 使い方</h2>
+        <p>AB-730 模擬問題集の操作説明です。出題中でも右上のヘルプから開けます。試験模擬のタイマーは止まりません。</p>
+      </div>
+      <div class="help-jump">
+        <a class="btn" href="#help-start">最初に</a>
+        <a class="btn" href="#help-modes">出題の種類</a>
+        <a class="btn" href="#help-solve">解き方</a>
+        <a class="btn" href="#help-result">結果のあと</a>
+        <a class="btn" href="#help-home">ホームの数字</a>
+        <a class="btn" href="#help-flow">おすすめの進め方</a>
+      </div>
+      <div class="help-body">
+        <h3 id="help-start">最初にやること</h3>
+        <ol>
+          <li><strong>試験模擬</strong> か <strong>学習モード（全問シャッフル）</strong> を 1 回解く</li>
+          <li>結果が <strong>履歴</strong> に残り、分野ごとの正解率が溜まる</li>
+          <li>そのあと <strong>間違えた問題を復習</strong> と <strong>弱点分野を再出題</strong> が使える</li>
+        </ol>
+        <p>どのモードでも、出題順と選択肢は毎回入れ替わります。</p>
+
+        <h3 id="help-modes">出題の種類</h3>
+        <div class="hist" style="padding:0">
+          <table>
+            <thead>
+              <tr><th>ボタン</th><th>向いている使い方</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>試験模擬</td><td>本番と同じく 50 問・45 分。途中では正解を出さない</td></tr>
+              <tr><td>学習モード（全問シャッフル）</td><td>50 問をランダム順。1 問ごとに解説を見る</td></tr>
+              <tr><td>シャッフル 20 問</td><td>全分野から 20 問。短時間の確認</td></tr>
+              <tr><td>分野別出題</td><td>3 つのカードから、その分野だけ解く</td></tr>
+              <tr><td>間違えた問題を復習</td><td>今までに間違えた問題だけ再出題。正解するとリストから外れる</td></tr>
+              <tr><td>弱点分野を再出題</td><td>累計正解率が一番低い分野を、誤答優先で出題</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 id="help-solve">解き方</h3>
+        <ul>
+          <li>選択肢をクリックして選ぶ（複数選択の問題は該当を 2 つ）</li>
+          <li><strong>解答を確認</strong> … 学習系モードで、その場で正解と解説を見る</li>
+          <li><strong>次へ / 前へ</strong> … 問題の行き来</li>
+          <li><strong>フラグ</strong> … あとで見直したい問題に印</li>
+          <li>下の番号マスで、任意の問題にジャンプ</li>
+          <li>最後の問題で <strong>結果を見る</strong>（試験模擬は <strong>終了して採点</strong>）</li>
+        </ul>
+        <p>キーボード：<span class="kbd">1</span>〜<span class="kbd">4</span> で選択、<span class="kbd">Enter</span> で確認または次へ、矢印キーで前後です。</p>
+
+        <h3 id="help-result">結果画面のあと</h3>
+        <ul>
+          <li><strong>今回の誤答を見直す</strong> … 解説だけ見る</li>
+          <li><strong>誤答をシャッフル再出題</strong> … 今回間違えた問題を、選択肢を入れ替えてもう一度解く</li>
+          <li><strong>弱点分野を出題</strong> … この回で正答率が低かった分野を集中して解く</li>
+          <li><strong>同じ条件でもう一度</strong> … 今やったモードをもう 1 セット</li>
+        </ul>
+        <p>結果は自動で履歴に保存されます。合格ラインは 700 点（正答率 × 1000 の簡易換算）です。</p>
+
+        <h3 id="help-home">ホームで見られる数字</h3>
+        <ul>
+          <li><strong>累計正解率 / 累計回答 / 受験回数 / 未復習の誤答</strong></li>
+          <li><strong>弱点分野の分析</strong> … 3 分野の累計正解率。低い分野に「弱点」と出る</li>
+          <li><strong>履歴</strong> … 日時、モード、正答率、スコア、分野ごとの内訳</li>
+        </ul>
+        <p>記録はこの PC のこのブラウザだけに残ります。消すときは履歴の <strong>履歴を削除</strong> です。</p>
+
+        <h3 id="help-flow">おすすめの進め方</h3>
+        <ol>
+          <li>まず <strong>学習モード</strong> で全体をつかむ</li>
+          <li><strong>試験模擬</strong> で時間配分を試す</li>
+          <li>履歴で弱い分野を確認し、<strong>弱点分野を再出題</strong></li>
+          <li><strong>間違えた問題を復習</strong> が 0 問になるまで繰り返す</li>
+          <li>直前は <strong>シャッフル 20 問</strong> か <strong>試験模擬</strong></li>
+        </ol>
+        <p>公式試験そのものではなく、出題範囲に合わせた練習用です。</p>
+      </div>
+      <div class="nav">
+        <span></span>
+        <button class="btn primary" type="button" id="btnHelpClose">閉じる</button>
+      </div>
+    </section>
+
+    <footer>
+      出題範囲は Microsoft Learn の Exam AB-730 Study Guide（2026年7月22日時点）に準拠した学習用オリジナル問題です。<br />
+      Microsoft の公式模擬試験ではありません。商標は各権利者に帰属します。記録はこのブラウザの localStorage に保存されます。
+    </footer>
+  </div>
+
+  <script src="questions.js"></script>
+  <script>
+    const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const EXAM_SECONDS = 45 * 60;
+    const PASS = 700;
+    const STORE_KEY = "ab730-progress-v2";
+    const DOMAIN_META = {
+      fundamentals: { label: "生成 AI の基礎", weight: "25–30%" },
+      prompts: { label: "プロンプトと会話", weight: "35–40%" },
+      content: { label: "ビジネスコンテンツ", weight: "25–30%" }
+    };
+    const MODE_LABELS = {
+      exam: "試験模擬",
+      study: "学習（全問）",
+      shuffle: "シャッフル20問",
+      domain: "分野別",
+      weak: "弱点再出題",
+      missed: "誤答復習"
+    };
+
+    const el = (id) => document.getElementById(id);
+    const home = el("home");
+    const quiz = el("quiz");
+    const result = el("result");
+    const help = el("help");
+
+    const state = {
+      mode: "study",
+      launch: null,
+      domain: null,
+      items: [],
+      index: 0,
+      answers: {},
+      flagged: new Set(),
+      revealed: new Set(),
+      secondsLeft: EXAM_SECONDS,
+      startedAt: 0,
+      timerId: null,
+      saved: false,
+      lastWrongIds: [],
+      lastWeakDomain: null,
+      helpReturn: "home"
+    };
+
+    function emptyStore() {
+      return { history: [], questionStats: {}, missedIds: [] };
+    }
+
+    function loadStore() {
+      try {
+        const raw = localStorage.getItem(STORE_KEY);
+        if (!raw) return emptyStore();
+        const data = JSON.parse(raw);
+        return {
+          history: Array.isArray(data.history) ? data.history : [],
+          questionStats: data.questionStats && typeof data.questionStats === "object" ? data.questionStats : {},
+          missedIds: Array.isArray(data.missedIds) ? data.missedIds : []
+        };
+      } catch (_) {
+        return emptyStore();
+      }
+    }
+
+    function saveStore(store) {
+      try { localStorage.setItem(STORE_KEY, JSON.stringify(store)); } catch (_) {}
+    }
+
+    function shuffle(arr) {
+      const a = arr.slice();
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function byId(id) {
+      return QUESTIONS.find((q) => q.id === id);
+    }
+
+    function domainCounts() {
+      const c = { fundamentals: 0, prompts: 0, content: 0 };
+      QUESTIONS.forEach((q) => { c[q.domain] += 1; });
+      return c;
+    }
+
+    function prepareQuestion(q) {
+      const order = q.options.map((_, i) => i);
+      const shuffled = shuffle(order);
+      return {
+        ...q,
+        options: shuffled.map((i) => q.options[i]),
+        answer: q.answer.map((i) => shuffled.indexOf(i)).sort((a, b) => a - b)
+      };
+    }
+
+    function pctClass(pct) {
+      if (pct == null) return "";
+      if (pct >= 80) return "ok";
+      if (pct >= 70) return "mid";
+      return "bad";
+    }
+
+    function formatPct(c, t) {
+      if (!t) return null;
+      return Math.round((c / t) * 100);
+    }
+
+    function cumulativeStats(store) {
+      const by = {
+        fundamentals: { c: 0, t: 0 },
+        prompts: { c: 0, t: 0 },
+        content: { c: 0, t: 0 }
+      };
+      let correct = 0;
+      let total = 0;
+      QUESTIONS.forEach((q) => {
+        const s = store.questionStats[String(q.id)];
+        if (!s || !s.seen) return;
+        by[q.domain].t += s.seen;
+        by[q.domain].c += s.correct || 0;
+        total += s.seen;
+        correct += s.correct || 0;
+      });
+      return { by, correct, total, accuracy: formatPct(correct, total) };
+    }
+
+    function weakestDomain(store) {
+      const { by } = cumulativeStats(store);
+      const ranked = Object.keys(by)
+        .filter((k) => by[k].t > 0)
+        .map((k) => ({ key: k, pct: formatPct(by[k].c, by[k].t), ...by[k] }))
+        .sort((a, b) => a.pct - b.pct || (b.t - a.t));
+      return ranked[0] || null;
+    }
+
+    function buildPool(cfg, store) {
+      const missedSet = new Set(store.missedIds);
+      let pool = QUESTIONS.slice();
+
+      if (cfg.kind === "domain" && cfg.domain) {
+        pool = pool.filter((q) => q.domain === cfg.domain);
+      } else if (cfg.kind === "missed") {
+        pool = store.missedIds.map(byId).filter(Boolean);
+      } else if (cfg.kind === "sessionMissed") {
+        pool = (cfg.ids || []).map(byId).filter(Boolean);
+      } else if (cfg.kind === "weak") {
+        const weak = cfg.domain || (weakestDomain(store) && weakestDomain(store).key);
+        pool = pool.filter((q) => q.domain === weak);
+        const missed = shuffle(pool.filter((q) => missedSet.has(q.id)));
+        const rest = shuffle(pool.filter((q) => !missedSet.has(q.id)));
+        return missed.concat(rest);
+      }
+
+      pool = shuffle(pool);
+      if (cfg.limit && pool.length > cfg.limit) pool = pool.slice(0, cfg.limit);
+      return pool;
+    }
+
+    function start(cfg) {
+      const store = loadStore();
+      stopTimer();
+
+      if (cfg.kind === "missed" && !store.missedIds.length) {
+        alert("復習する誤答はまだありません。");
+        return;
+      }
+      if (cfg.kind === "weak") {
+        const weak = weakestDomain(store);
+        if (!weak) {
+          alert("まだ分析できる履歴がありません。先に問題を解いてください。");
+          return;
+        }
+        cfg.domain = weak.key;
+      }
+
+      const pool = buildPool(cfg, store);
+      if (!pool.length) {
+        alert("出題できる問題がありません。");
+        return;
+      }
+
+      state.launch = cfg;
+      state.mode = cfg.feedback === "exam" ? "exam" : "study";
+      state.domain = cfg.domain || null;
+      state.index = 0;
+      state.answers = {};
+      state.flagged = new Set();
+      state.revealed = new Set();
+      state.startedAt = Date.now();
+      state.secondsLeft = EXAM_SECONDS;
+      state.saved = false;
+      state.lastWrongIds = [];
+      state.lastWeakDomain = null;
+      state.items = pool.map(prepareQuestion);
+
+      home.classList.add("hidden");
+      result.classList.add("hidden");
+      help.classList.add("hidden");
+      quiz.classList.remove("hidden");
+      el("btnHome").classList.remove("hidden");
+      el("btnHelp").classList.remove("hidden");
+
+      el("modePill").textContent = cfg.label || MODE_LABELS[cfg.kind] || "出題";
+      el("timer").classList.toggle("hidden", state.mode !== "exam");
+      el("btnCheck").classList.toggle("hidden", state.mode !== "study");
+      if (state.mode === "exam") startTimer();
+      render();
+    }
+
+    function startTimer() {
+      stopTimer();
+      tickTimer();
+      state.timerId = setInterval(tickTimer, 1000);
+    }
+    function stopTimer() {
+      if (state.timerId) clearInterval(state.timerId);
+      state.timerId = null;
+    }
+    function tickTimer() {
+      const t = el("timer");
+      const m = Math.floor(state.secondsLeft / 60);
+      const s = String(state.secondsLeft % 60).padStart(2, "0");
+      t.textContent = `${m}:${s}`;
+      t.classList.toggle("warn", state.secondsLeft <= 300 && state.secondsLeft > 60);
+      t.classList.toggle("danger", state.secondsLeft <= 60);
+      if (state.secondsLeft <= 0) {
+        stopTimer();
+        finish();
+        return;
+      }
+      state.secondsLeft -= 1;
+    }
+
+    function selected(i) {
+      return state.answers[i] ? state.answers[i].slice() : [];
+    }
+
+    function toggleChoice(optIndex) {
+      const q = state.items[state.index];
+      if (state.mode === "review" || state.revealed.has(state.index)) return;
+      let cur = selected(state.index);
+      if (q.type === "single") cur = [optIndex];
+      else cur = cur.includes(optIndex) ? cur.filter((x) => x !== optIndex) : cur.concat(optIndex);
+      state.answers[state.index] = cur.sort((a, b) => a - b);
+      render();
+    }
+
+    function isCorrect(i) {
+      const q = state.items[i];
+      const a = (state.answers[i] || []).slice().sort((x, y) => x - y);
+      const b = q.answer.slice().sort((x, y) => x - y);
+      return a.length === b.length && a.every((v, n) => v === b[n]);
+    }
+
+    function render() {
+      const i = state.index;
+      const q = state.items[i];
+      const n = state.items.length;
+      const reviewing = state.mode === "review" || state.revealed.has(i);
+      const sel = selected(i);
+
+      el("qnum").textContent = `問題 ${i + 1} / ${n}　·　${q.objective}`;
+      el("qtext").textContent = q.question;
+      el("qhint").textContent = q.type === "multi" ? "該当するものを 2 つ選んでください。" : "最も適切なものを 1 つ選んでください。";
+      el("domainPill").textContent = q.domainLabel;
+      el("prog").style.width = `${((i + 1) / n) * 100}%`;
+
+      const opts = el("opts");
+      opts.innerHTML = "";
+      q.options.forEach((text, idx) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "opt";
+        const chosen = sel.includes(idx);
+        const right = q.answer.includes(idx);
+        if (chosen) btn.classList.add("selected");
+        if (reviewing) {
+          if (right) btn.classList.add("correct");
+          else if (chosen) btn.classList.add("wrong");
+          btn.disabled = true;
+        }
+        btn.innerHTML = `<span class="mark">${LETTERS[idx]}</span><span>${escapeHtml(text)}</span>`;
+        btn.addEventListener("click", () => toggleChoice(idx));
+        opts.appendChild(btn);
+      });
+
+      const exp = el("explain");
+      if (reviewing) {
+        const ok = isCorrect(i);
+        exp.classList.add("show");
+        exp.innerHTML = `<b>${ok ? "正解です" : "不正解です"}</b>${escapeHtml(q.explanation)}`;
+      } else {
+        exp.classList.remove("show");
+        exp.innerHTML = "";
+      }
+
+      el("btnPrev").disabled = i === 0;
+      el("btnFlag").textContent = state.flagged.has(i) ? "フラグ解除" : "フラグ";
+      el("btnCheck").disabled = reviewing || sel.length === 0;
+
+      const last = i === n - 1;
+      const next = el("btnNext");
+      if (state.mode === "exam") next.textContent = last ? "終了して採点" : "次へ";
+      else if (state.mode === "review") next.textContent = last ? "結果へ戻る" : "次へ";
+      else next.textContent = last ? "結果を見る" : "次へ";
+
+      renderMap();
+    }
+
+    function renderMap() {
+      const map = el("map");
+      map.innerHTML = "";
+      state.items.forEach((_, i) => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "dot";
+        b.textContent = i + 1;
+        if (i === state.index) b.classList.add("current");
+        if (state.answers[i]?.length) b.classList.add("answered");
+        if (state.flagged.has(i)) b.classList.add("flagged");
+        if (state.mode === "review" || state.revealed.has(i)) b.classList.add(isCorrect(i) ? "ok" : "ng");
+        b.addEventListener("click", () => { state.index = i; render(); });
+        map.appendChild(b);
+      });
+    }
+
+    function checkCurrent() {
+      if (!selected(state.index).length) return;
+      state.revealed.add(state.index);
+      render();
+    }
+
+    function next() {
+      if (state.index >= state.items.length - 1) {
+        if (state.mode === "review") {
+          showResult(false);
+          return;
+        }
+        if (state.mode === "exam") {
+          const unanswered = state.items.filter((_, i) => !state.answers[i]?.length).length;
+          if (unanswered > 0 && !confirm(`未回答が ${unanswered} 問あります。採点しますか？`)) return;
+        }
+        finish();
+        return;
+      }
+      state.index += 1;
+      render();
+    }
+
+    function finish() {
+      stopTimer();
+      showResult(true);
+    }
+
+    function elapsedSec() {
+      return Math.max(0, Math.round((Date.now() - state.startedAt) / 1000));
+    }
+
+    function elapsedLabel(sec) {
+      const m = Math.floor(sec / 60);
+      const s = sec % 60;
+      return `${m}分${s}秒`;
+    }
+
+    function sessionSummary() {
+      const n = state.items.length;
+      let correct = 0;
+      const by = { fundamentals: { c: 0, t: 0 }, prompts: { c: 0, t: 0 }, content: { c: 0, t: 0 } };
+      const wrongIds = [];
+      const answeredIds = [];
+      state.items.forEach((q, i) => {
+        by[q.domain].t += 1;
+        answeredIds.push(q.id);
+        if (isCorrect(i)) {
+          correct += 1;
+          by[q.domain].c += 1;
+        } else {
+          wrongIds.push(q.id);
+        }
+      });
+      return { n, correct, by, wrongIds, answeredIds, accuracy: formatPct(correct, n), score: n ? Math.round((correct / n) * 1000) : 0 };
+    }
+
+    function recordSession(sum) {
+      const store = loadStore();
+      const missed = new Set(store.missedIds);
+      state.items.forEach((q, i) => {
+        const key = String(q.id);
+        if (!store.questionStats[key]) store.questionStats[key] = { seen: 0, correct: 0 };
+        store.questionStats[key].seen += 1;
+        if (isCorrect(i)) {
+          store.questionStats[key].correct += 1;
+          missed.delete(q.id);
+        } else {
+          missed.add(q.id);
+        }
+      });
+      store.missedIds = Array.from(missed);
+      const cfg = state.launch || {};
+      store.history.unshift({
+        at: Date.now(),
+        kind: cfg.kind || state.mode,
+        label: cfg.label || MODE_LABELS[cfg.kind] || "出題",
+        domain: cfg.domain || null,
+        score: sum.score,
+        correct: sum.correct,
+        total: sum.n,
+        accuracy: sum.accuracy,
+        elapsed: elapsedSec(),
+        domains: sum.by,
+        wrongIds: sum.wrongIds
+      });
+      store.history = store.history.slice(0, 50);
+      saveStore(store);
+    }
+
+    function showResult(save) {
+      quiz.classList.add("hidden");
+      help.classList.add("hidden");
+      result.classList.remove("hidden");
+      el("btnHelp").classList.remove("hidden");
+      const sum = sessionSummary();
+      if (save && !state.saved) {
+        recordSession(sum);
+        state.saved = true;
+      }
+      state.lastWrongIds = sum.wrongIds;
+      const sessionWeak = Object.keys(sum.by)
+        .filter((k) => sum.by[k].t)
+        .map((k) => ({ key: k, pct: formatPct(sum.by[k].c, sum.by[k].t), t: sum.by[k].t }))
+        .sort((a, b) => a.pct - b.pct)[0];
+      state.lastWeakDomain = sessionWeak && sessionWeak.pct < 100 ? sessionWeak.key : (weakestDomain(loadStore()) && weakestDomain(loadStore()).key);
+
+      const pass = sum.score >= PASS;
+      const scoreEl = el("scoreNum");
+      scoreEl.textContent = String(sum.score);
+      scoreEl.className = "score " + (pass ? "pass" : "fail");
+      const v = el("verdict");
+      v.className = "verdict " + (pass ? "pass" : "fail");
+      v.textContent = pass ? "合格ライン到達" : "合格ライン未達";
+      el("scoreSub").textContent = `${sum.correct} / ${sum.n} 問正解（正答率 ${sum.accuracy ?? 0}%）　·　履歴に保存済み`;
+      el("statCorrect").textContent = `${sum.correct} / ${sum.n}`;
+      el("statTime").textContent = elapsedLabel(elapsedSec());
+
+      el("domainBars").innerHTML = Object.keys(sum.by).filter((k) => sum.by[k].t).map((k) => {
+        const pct = formatPct(sum.by[k].c, sum.by[k].t);
+        const bar = pctClass(pct) === "bad" ? "bad" : (pctClass(pct) === "ok" ? "ok" : "");
+        const weakMark = state.lastWeakDomain === k && pct < 80 ? "　弱点" : "";
+        return `<div class="drow"><div class="lab"><span>${DOMAIN_META[k].label}${weakMark}</span><span>${sum.by[k].c}/${sum.by[k].t}（${pct}%）</span></div><div class="track"><i class="${bar}" style="width:${pct}%"></i></div></div>`;
+      }).join("");
+
+      const box = el("resultWeak");
+      if (sessionWeak && sessionWeak.pct < 80) {
+        box.innerHTML = `<div class="callout"><div><b>今回の弱点：${DOMAIN_META[sessionWeak.key].label}</b><p>この回の正解率は ${sessionWeak.pct}% です。解説を見たあと、弱点分野だけをシャッフル再出題できます。</p></div></div>`;
+      } else {
+        box.innerHTML = `<div class="callout ok"><div><b>大きな偏りはありません</b><p>誤答があれば復習し、シャッフル出題で定着を確認してください。</p></div></div>`;
+      }
+
+      el("btnReviewWrong").disabled = !sum.wrongIds.length;
+      el("btnRetryMissed").disabled = !sum.wrongIds.length;
+      el("btnResultWeak").disabled = !state.lastWeakDomain;
+    }
+
+    function openReview(wrongOnly) {
+      state.mode = "review";
+      const indices = state.items.map((_, i) => i).filter((i) => !wrongOnly || !isCorrect(i));
+      if (!indices.length) {
+        alert("間違えた問題はありません。");
+        return;
+      }
+      state.index = indices[0];
+      result.classList.add("hidden");
+      help.classList.add("hidden");
+      quiz.classList.remove("hidden");
+      el("modePill").textContent = wrongOnly ? "誤答レビュー" : "全問解説";
+      el("timer").classList.add("hidden");
+      el("btnCheck").classList.add("hidden");
+      render();
+    }
+
+    function goHome() {
+      stopTimer();
+      quiz.classList.add("hidden");
+      result.classList.add("hidden");
+      help.classList.add("hidden");
+      home.classList.remove("hidden");
+      el("btnHome").classList.add("hidden");
+      el("btnHelp").classList.remove("hidden");
+      renderDashboard();
+    }
+
+    function showHelp() {
+      if (!help.classList.contains("hidden")) return;
+      if (!quiz.classList.contains("hidden")) state.helpReturn = "quiz";
+      else if (!result.classList.contains("hidden")) state.helpReturn = "result";
+      else state.helpReturn = "home";
+      home.classList.add("hidden");
+      quiz.classList.add("hidden");
+      result.classList.add("hidden");
+      help.classList.remove("hidden");
+      el("btnHome").classList.remove("hidden");
+      el("btnHelp").classList.add("hidden");
+      window.scrollTo(0, 0);
+    }
+
+    function closeHelp() {
+      help.classList.add("hidden");
+      el("btnHelp").classList.remove("hidden");
+      if (state.helpReturn === "quiz") {
+        quiz.classList.remove("hidden");
+        el("btnHome").classList.remove("hidden");
+      } else if (state.helpReturn === "result") {
+        result.classList.remove("hidden");
+        el("btnHome").classList.remove("hidden");
+      } else {
+        home.classList.remove("hidden");
+        el("btnHome").classList.add("hidden");
+      }
+    }
+
+    function renderDashboard() {
+      const store = loadStore();
+      const cum = cumulativeStats(store);
+      const counts = domainCounts();
+      const weak = weakestDomain(store);
+      const hist = store.history;
+
+      el("overviewMeta").innerHTML = `
+        <div><dt>累計正解率</dt><dd>${cum.total ? cum.accuracy + "%" : "—"}</dd></div>
+        <div><dt>累計回答</dt><dd>${cum.total} 問</dd></div>
+        <div><dt>受験回数</dt><dd>${hist.length} 回</dd></div>
+        <div><dt>未復習の誤答</dt><dd>${store.missedIds.length} 問</dd></div>
+      `;
+
+      const callout = el("weakCallout");
+      if (weak && weak.pct < 80) {
+        callout.innerHTML = `<div class="callout"><div><b>弱点分野：${DOMAIN_META[weak.key].label}</b><p>累計正解率 ${weak.pct}%（${weak.c}/${weak.t}）。誤答を優先してシャッフル再出題できます。</p></div><button class="btn primary" type="button" id="btnWeakHero">弱点を出題</button></div>`;
+        el("btnWeakHero").addEventListener("click", () => start({ kind: "weak", label: "弱点再出題", feedback: "study" }));
+      } else if (cum.total) {
+        callout.innerHTML = `<div class="callout ok"><div><b>分野の偏りは小さめです</b><p>誤答復習とシャッフル20問で、取りこぼしを潰してください。</p></div></div>`;
+      } else {
+        callout.innerHTML = "";
+      }
+
+      el("missedBadge").textContent = `${store.missedIds.length}問`;
+      el("btnMissed").disabled = store.missedIds.length === 0;
+      el("btnWeak").disabled = !weak;
+      el("btnWeakFromAnalysis").disabled = !weak;
+
+      el("domainCards").innerHTML = Object.keys(DOMAIN_META).map((k) => {
+        const st = cum.by[k];
+        const pct = formatPct(st.c, st.t);
+        const cls = pct == null ? "" : pctClass(pct);
+        const rate = pct == null ? "未受験" : `${pct}%`;
+        return `<button class="dcard" type="button" data-domain="${k}">
+          <div class="k">${DOMAIN_META[k].weight}</div>
+          <strong>${DOMAIN_META[k].label}</strong>
+          <div class="pct ${cls}">${rate}</div>
+          <div class="sub">${st.t ? `${st.c}/${st.t} 累計` : `${counts[k]}問`}　·　クリックして出題</div>
+        </button>`;
+      }).join("");
+      el("domainCards").querySelectorAll("[data-domain]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const d = btn.dataset.domain;
+          start({ kind: "domain", domain: d, label: DOMAIN_META[d].label, feedback: "study" });
+        });
+      });
+
+      const bars = el("analysisBars");
+      const empty = el("analysisEmpty");
+      if (!cum.total) {
+        bars.innerHTML = "";
+        empty.classList.remove("hidden");
+      } else {
+        empty.classList.add("hidden");
+        bars.innerHTML = Object.keys(DOMAIN_META).map((k) => {
+          const st = cum.by[k];
+          const pct = formatPct(st.c, st.t) || 0;
+          const bar = !st.t ? "" : (pctClass(pct) === "bad" ? "bad" : (pctClass(pct) === "ok" ? "ok" : ""));
+          const mark = weak && weak.key === k ? "　← 弱点" : "";
+          const right = st.t ? `${st.c}/${st.t}（${pct}%）` : "未回答";
+          return `<div class="drow"><div class="lab"><span>${DOMAIN_META[k].label}${mark}</span><span>${right}</span></div><div class="track"><i class="${bar}" style="width:${st.t ? pct : 0}%"></i></div></div>`;
+        }).join("");
+      }
+
+      el("histCount").textContent = hist.length ? `直近 ${Math.min(hist.length, 50)} 回` : "まだ受験がありません";
+      if (!hist.length) {
+        el("histTable").innerHTML = `<p class="empty-hint" style="padding:8px 0 0">試験模擬・学習・分野別・シャッフルの結果がここに残り、正解率が累計分析へ反映されます。</p>`;
+      } else {
+        el("histTable").innerHTML = `<table>
+          <thead><tr><th>日時</th><th>モード</th><th>正答率</th><th>スコア</th><th>内訳</th></tr></thead>
+          <tbody>${hist.map((h) => {
+            const d = new Date(h.at);
+            const when = `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+            const accCls = (h.accuracy ?? 0) >= 70 ? "acc-ok" : "acc-bad";
+            const parts = Object.keys(h.domains || {}).filter((k) => h.domains[k].t).map((k) => {
+              const p = formatPct(h.domains[k].c, h.domains[k].t);
+              return `${DOMAIN_META[k].label.replace("生成 AI の基礎", "基礎").replace("プロンプトと会話", "プロンプト").replace("ビジネスコンテンツ", "コンテンツ")} ${p}%`;
+            }).join(" / ");
+            return `<tr>
+              <td>${when}</td>
+              <td><span class="tag">${escapeHtml(h.label || MODE_LABELS[h.kind] || h.kind)}</span></td>
+              <td class="num ${accCls}">${h.accuracy ?? 0}%</td>
+              <td class="num">${h.score}</td>
+              <td>${escapeHtml(parts)}</td>
+            </tr>`;
+          }).join("")}</tbody>
+        </table>`;
+      }
+    }
+
+    function escapeHtml(s) {
+      return String(s)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    el("btnExam").addEventListener("click", () => start({ kind: "exam", label: "試験模擬", feedback: "exam" }));
+    el("btnStudy").addEventListener("click", () => start({ kind: "study", label: "学習（全問シャッフル）", feedback: "study" }));
+    el("btnShuffle").addEventListener("click", () => start({ kind: "shuffle", label: "シャッフル20問", feedback: "study", limit: 20 }));
+    el("btnMissed").addEventListener("click", () => start({ kind: "missed", label: "誤答復習", feedback: "study" }));
+    el("btnWeak").addEventListener("click", () => start({ kind: "weak", label: "弱点再出題", feedback: "study" }));
+    el("btnWeakFromAnalysis").addEventListener("click", () => start({ kind: "weak", label: "弱点再出題", feedback: "study" }));
+    el("btnHelp").addEventListener("click", showHelp);
+    el("btnHelpClose").addEventListener("click", closeHelp);
+    el("btnHome").addEventListener("click", () => {
+      if (!help.classList.contains("hidden") && state.helpReturn !== "home") closeHelp();
+      else goHome();
+    });
+    el("btnPrev").addEventListener("click", () => { if (state.index > 0) { state.index -= 1; render(); } });
+    el("btnNext").addEventListener("click", next);
+    el("btnCheck").addEventListener("click", checkCurrent);
+    el("btnFlag").addEventListener("click", () => {
+      if (state.flagged.has(state.index)) state.flagged.delete(state.index);
+      else state.flagged.add(state.index);
+      render();
+    });
+    el("btnRetry").addEventListener("click", () => start(state.launch || { kind: "study", feedback: "study" }));
+    el("btnReviewWrong").addEventListener("click", () => openReview(true));
+    el("btnRetryMissed").addEventListener("click", () => {
+      start({ kind: "sessionMissed", label: "今回の誤答を再出題", feedback: "study", ids: state.lastWrongIds });
+    });
+    el("btnResultWeak").addEventListener("click", () => {
+      const d = state.lastWeakDomain;
+      if (!d) return;
+      start({ kind: "weak", domain: d, label: "弱点再出題", feedback: "study" });
+    });
+    el("btnClearHist").addEventListener("click", () => {
+      if (!confirm("履歴・累計正解率・誤答リストをすべて削除しますか？")) return;
+      saveStore(emptyStore());
+      renderDashboard();
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (quiz.classList.contains("hidden")) return;
+      const q = state.items[state.index];
+      if (!q) return;
+      if (e.key >= "1" && e.key <= "9") {
+        const idx = Number(e.key) - 1;
+        if (idx < q.options.length) toggleChoice(idx);
+      } else if (e.key === "Enter") {
+        if (state.mode === "study" && !state.revealed.has(state.index) && selected(state.index).length) checkCurrent();
+        else next();
+      } else if (e.key === "ArrowLeft") {
+        if (state.index > 0) { state.index -= 1; render(); }
+      } else if (e.key === "ArrowRight") next();
+    });
+
+    renderDashboard();
+  </script>
+</body>
+</html>
