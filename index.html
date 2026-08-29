@@ -94,6 +94,15 @@
     .dcard .pct.mid { color: var(--accent); }
     .dcard .pct.bad { color: var(--ng); }
     .dcard .sub { font-size: 12px; color: var(--muted); }
+    .dcard-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+    .count-lab {
+      font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    }
+    .count-lab input {
+      width: 72px; border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px;
+      font-size: 14px; font-family: inherit;
+    }
+    #resumeBar { padding: 12px 28px 0; display: grid; gap: 8px; }
 
     .note { padding: 0 28px 20px; font-size: 12px; color: var(--muted); line-height: 1.6; }
 
@@ -268,6 +277,7 @@
           <h2>出題する</h2>
           <p>全モードで問題順・選択肢をシャッフル</p>
         </div>
+        <div id="resumeBar"></div>
         <div class="modes">
           <button class="mode" type="button" id="btnExam">
             <strong>試験模擬</strong>
@@ -301,7 +311,10 @@
       <section class="card">
         <div class="sec-title">
           <h2>分野別出題</h2>
-          <p>累計正解率をクリックしてその分野だけ解く</p>
+          <label class="count-lab">出題数
+            <input id="domainCount" type="number" min="1" max="50" value="10" />
+            問（1〜50）
+          </label>
         </div>
         <div class="domains" id="domainCards"></div>
       </section>
@@ -421,7 +434,7 @@
               <tr><td>試験模擬</td><td>3 分野から 50 問を抽出・45 分。途中では正解を出さない</td></tr>
               <tr><td>学習モード（全問シャッフル）</td><td>150 問（各分野 50 問）をランダム順。1 問ごとに解説を見る</td></tr>
               <tr><td>シャッフル 20 問</td><td>全分野から 20 問。短時間の確認</td></tr>
-              <tr><td>分野別出題</td><td>3 つのカードから、その分野 50 問だけ解く</td></tr>
+              <tr><td>分野別出題</td><td>出題数を 1〜50 で指定し、その分野だけ解く。途中でやめても続きから再開できる</td></tr>
               <tr><td>間違えた問題を復習</td><td>今までに間違えた問題だけ再出題。正解するとリストから外れる</td></tr>
               <tr><td>弱点分野を再出題</td><td>累計正解率が一番低い分野を、誤答優先で出題</td></tr>
             </tbody>
@@ -435,6 +448,7 @@
           <li><strong>次へ / 前へ</strong> … 問題の行き来</li>
           <li><strong>フラグ</strong> … あとで見直したい問題に印</li>
           <li>下の番号マスで、任意の問題にジャンプ</li>
+          <li><strong>ホームへ</strong> で中断すると進捗が保存され、全体（学習・試験模擬）も分野別も続きから再開できる</li>
           <li>最後の問題で <strong>結果を見る</strong>（試験模擬は <strong>終了して採点</strong>）</li>
         </ul>
         <p>キーボード：<span class="kbd">1</span>〜<span class="kbd">4</span> で選択、<span class="kbd">Enter</span> で確認または次へ、矢印キーで前後です。</p>
@@ -520,11 +534,12 @@
       saved: false,
       lastWrongIds: [],
       lastWeakDomain: null,
-      helpReturn: "home"
+      helpReturn: "home",
+      completed: false
     };
 
     function emptyStore() {
-      return { history: [], questionStats: {}, missedIds: [] };
+      return { history: [], questionStats: {}, missedIds: [], inProgress: {}, settings: { domainCount: 10 } };
     }
 
     function loadStore() {
@@ -532,10 +547,13 @@
         const raw = localStorage.getItem(STORE_KEY);
         if (!raw) return emptyStore();
         const data = JSON.parse(raw);
+        const empty = emptyStore();
         return {
           history: Array.isArray(data.history) ? data.history : [],
           questionStats: data.questionStats && typeof data.questionStats === "object" ? data.questionStats : {},
-          missedIds: Array.isArray(data.missedIds) ? data.missedIds : []
+          missedIds: Array.isArray(data.missedIds) ? data.missedIds : [],
+          inProgress: data.inProgress && typeof data.inProgress === "object" ? data.inProgress : {},
+          settings: Object.assign({}, empty.settings, data.settings || {})
         };
       } catch (_) {
         return emptyStore();
@@ -544,6 +562,97 @@
 
     function saveStore(store) {
       try { localStorage.setItem(STORE_KEY, JSON.stringify(store)); } catch (_) {}
+    }
+
+    function clampCount(n) {
+      const x = parseInt(n, 10);
+      if (!Number.isFinite(x)) return 10;
+      return Math.min(50, Math.max(1, x));
+    }
+
+    function progressKey(cfg) {
+      if (!cfg) return null;
+      if (cfg.kind === "domain" && cfg.domain) return "domain:" + cfg.domain;
+      if (cfg.kind === "exam") return "exam";
+      if (cfg.kind === "study") return "study";
+      return null;
+    }
+
+    function getProgress(key) {
+      if (!key) return null;
+      return (loadStore().inProgress || {})[key] || null;
+    }
+
+    function hasMeaningfulProgress() {
+      return state.index > 0 || Object.keys(state.answers).length > 0 || state.flagged.size > 0 || state.revealed.size > 0;
+    }
+
+    function canSaveProgress() {
+      return !state.completed && state.mode !== "review" && progressKey(state.launch) && state.items.length && hasMeaningfulProgress();
+    }
+
+    function saveProgressNow() {
+      if (!canSaveProgress()) return;
+      const store = loadStore();
+      store.inProgress = store.inProgress || {};
+      store.inProgress[progressKey(state.launch)] = {
+        launch: state.launch,
+        mode: state.mode,
+        domain: state.domain,
+        items: state.items,
+        index: state.index,
+        answers: state.answers,
+        flagged: Array.from(state.flagged),
+        revealed: Array.from(state.revealed),
+        secondsLeft: state.secondsLeft,
+        elapsed: elapsedSec(),
+        savedAt: Date.now()
+      };
+      saveStore(store);
+    }
+
+    function clearProgress(key) {
+      if (!key) return;
+      const store = loadStore();
+      if (store.inProgress && store.inProgress[key]) {
+        delete store.inProgress[key];
+        saveStore(store);
+      }
+    }
+
+    function resumeFrom(key) {
+      const snap = getProgress(key);
+      if (!snap || !Array.isArray(snap.items) || !snap.items.length) {
+        alert("再開できる進捗がありません。");
+        return;
+      }
+      stopTimer();
+      state.launch = snap.launch;
+      state.mode = snap.mode;
+      state.domain = snap.domain || null;
+      state.items = snap.items;
+      state.index = Math.min(Math.max(0, snap.index || 0), snap.items.length - 1);
+      state.answers = snap.answers || {};
+      state.flagged = new Set(snap.flagged || []);
+      state.revealed = new Set(snap.revealed || []);
+      state.secondsLeft = snap.secondsLeft ?? EXAM_SECONDS;
+      state.startedAt = Date.now() - (snap.elapsed || 0) * 1000;
+      state.saved = false;
+      state.completed = false;
+      state.lastWrongIds = [];
+      state.lastWeakDomain = null;
+
+      home.classList.add("hidden");
+      result.classList.add("hidden");
+      help.classList.add("hidden");
+      quiz.classList.remove("hidden");
+      el("btnHome").classList.remove("hidden");
+      el("btnHelp").classList.remove("hidden");
+      el("modePill").textContent = (snap.launch && snap.launch.label) || "続きから";
+      el("timer").classList.toggle("hidden", state.mode !== "exam");
+      el("btnCheck").classList.toggle("hidden", state.mode !== "study");
+      if (state.mode === "exam") startTimer();
+      render();
     }
 
     function shuffle(arr) {
@@ -662,11 +771,18 @@
         cfg.domain = weak.key;
       }
 
+      const key = progressKey(cfg);
+      if (key && getProgress(key) && !confirm("未完了の進捗があります。新しく始めると続きからはできなくなります。開始しますか？")) {
+        return;
+      }
+
       const pool = buildPool(cfg, store);
       if (!pool.length) {
         alert("出題できる問題がありません。");
         return;
       }
+
+      if (key) clearProgress(key);
 
       state.launch = cfg;
       state.mode = cfg.feedback === "exam" ? "exam" : "study";
@@ -678,6 +794,7 @@
       state.startedAt = Date.now();
       state.secondsLeft = EXAM_SECONDS;
       state.saved = false;
+      state.completed = false;
       state.lastWrongIds = [];
       state.lastWeakDomain = null;
       state.items = pool.map(prepareQuestion);
@@ -718,6 +835,7 @@
         return;
       }
       state.secondsLeft -= 1;
+      if (state.secondsLeft % 10 === 0) saveProgressNow();
     }
 
     function selected(i) {
@@ -731,6 +849,7 @@
       if (q.type === "single") cur = [optIndex];
       else cur = cur.includes(optIndex) ? cur.filter((x) => x !== optIndex) : cur.concat(optIndex);
       state.answers[state.index] = cur.sort((a, b) => a - b);
+      saveProgressNow();
       render();
     }
 
@@ -808,7 +927,7 @@
         if (state.answers[i]?.length) b.classList.add("answered");
         if (state.flagged.has(i)) b.classList.add("flagged");
         if (state.mode === "review" || state.revealed.has(i)) b.classList.add(isCorrect(i) ? "ok" : "ng");
-        b.addEventListener("click", () => { state.index = i; render(); });
+        b.addEventListener("click", () => { state.index = i; saveProgressNow(); render(); });
         map.appendChild(b);
       });
     }
@@ -816,6 +935,7 @@
     function checkCurrent() {
       if (!selected(state.index).length) return;
       state.revealed.add(state.index);
+      saveProgressNow();
       render();
     }
 
@@ -833,11 +953,14 @@
         return;
       }
       state.index += 1;
+      saveProgressNow();
       render();
     }
 
     function finish() {
       stopTimer();
+      clearProgress(progressKey(state.launch));
+      state.completed = true;
       showResult(true);
     }
 
@@ -968,6 +1091,7 @@
     }
 
     function goHome() {
+      saveProgressNow();
       stopTimer();
       quiz.classList.add("hidden");
       result.classList.add("hidden");
@@ -979,6 +1103,7 @@
     }
 
     function showHelp() {
+      saveProgressNow();
       if (!help.classList.contains("hidden")) return;
       if (!quiz.classList.contains("hidden")) state.helpReturn = "quiz";
       else if (!result.classList.contains("hidden")) state.helpReturn = "result";
@@ -1036,23 +1161,48 @@
       el("btnWeak").disabled = !weak;
       el("btnWeakFromAnalysis").disabled = !weak;
 
+      const resumeBits = [];
+      const studyP = getProgress("study");
+      const examP = getProgress("exam");
+      if (studyP) {
+        resumeBits.push(`<button class="mode" type="button" id="btnResumeStudy"><strong>全体の続きから（学習）</strong><em>${(studyP.index || 0) + 1} / ${studyP.items.length}</em><span>中断した学習モードを、同じ問題順・同じ選択肢のまま再開します。</span></button>`);
+      }
+      if (examP) {
+        resumeBits.push(`<button class="mode" type="button" id="btnResumeExam"><strong>全体の続きから（試験模擬）</strong><em>${(examP.index || 0) + 1} / ${examP.items.length}</em><span>中断した試験模擬を、残り時間つきで再開します。</span></button>`);
+      }
+      el("resumeBar").innerHTML = resumeBits.join("");
+      if (el("btnResumeStudy")) el("btnResumeStudy").addEventListener("click", () => resumeFrom("study"));
+      if (el("btnResumeExam")) el("btnResumeExam").addEventListener("click", () => resumeFrom("exam"));
+
+      const savedCount = clampCount(store.settings && store.settings.domainCount);
+      const countInput = el("domainCount");
+      if (countInput && document.activeElement !== countInput) countInput.value = String(savedCount);
+
       el("domainCards").innerHTML = Object.keys(DOMAIN_META).map((k) => {
         const st = cum.by[k];
         const pct = formatPct(st.c, st.t);
         const cls = pct == null ? "" : pctClass(pct);
         const rate = pct == null ? "未受験" : `${pct}%`;
-        return `<button class="dcard" type="button" data-domain="${k}">
+        const prog = getProgress("domain:" + k);
+        const resumeBtn = prog
+          ? `<button class="btn" type="button" data-resume="${k}">続きから ${(prog.index || 0) + 1}/${prog.items.length}</button>`
+          : "";
+        return `<div class="dcard">
           <div class="k">${DOMAIN_META[k].weight}</div>
           <strong>${DOMAIN_META[k].label}</strong>
           <div class="pct ${cls}">${rate}</div>
-          <div class="sub">${st.t ? `${st.c}/${st.t} 累計` : `${counts[k]}問`}　·　クリックして出題</div>
-        </button>`;
+          <div class="sub">${st.t ? `${st.c}/${st.t} 累計` : `${counts[k]}問`}　·　上の出題数で開始</div>
+          <div class="dcard-actions">
+            <button class="btn primary" type="button" data-domain="${k}">出題</button>
+            ${resumeBtn}
+          </div>
+        </div>`;
       }).join("");
       el("domainCards").querySelectorAll("[data-domain]").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const d = btn.dataset.domain;
-          start({ kind: "domain", domain: d, label: DOMAIN_META[d].label, feedback: "study" });
-        });
+        btn.addEventListener("click", () => startDomain(btn.dataset.domain));
+      });
+      el("domainCards").querySelectorAll("[data-resume]").forEach((btn) => {
+        btn.addEventListener("click", () => resumeFrom("domain:" + btn.dataset.resume));
       });
 
       const bars = el("analysisBars");
@@ -1098,6 +1248,27 @@
       }
     }
 
+    function persistDomainCount() {
+      const n = clampCount(el("domainCount").value);
+      el("domainCount").value = String(n);
+      const store = loadStore();
+      store.settings = store.settings || {};
+      store.settings.domainCount = n;
+      saveStore(store);
+      return n;
+    }
+
+    function startDomain(k) {
+      const n = persistDomainCount();
+      start({
+        kind: "domain",
+        domain: k,
+        label: DOMAIN_META[k].label + "（" + n + "問）",
+        feedback: "study",
+        limit: n
+      });
+    }
+
     function escapeHtml(s) {
       return String(s)
         .replace(/&/g, "&amp;")
@@ -1118,12 +1289,13 @@
       if (!help.classList.contains("hidden") && state.helpReturn !== "home") closeHelp();
       else goHome();
     });
-    el("btnPrev").addEventListener("click", () => { if (state.index > 0) { state.index -= 1; render(); } });
+    el("btnPrev").addEventListener("click", () => { if (state.index > 0) { state.index -= 1; saveProgressNow(); render(); } });
     el("btnNext").addEventListener("click", next);
     el("btnCheck").addEventListener("click", checkCurrent);
     el("btnFlag").addEventListener("click", () => {
       if (state.flagged.has(state.index)) state.flagged.delete(state.index);
       else state.flagged.add(state.index);
+      saveProgressNow();
       render();
     });
     el("btnRetry").addEventListener("click", () => start(state.launch || { kind: "study", feedback: "study" }));
@@ -1137,7 +1309,7 @@
       start({ kind: "weak", domain: d, label: "弱点再出題", feedback: "study" });
     });
     el("btnClearHist").addEventListener("click", () => {
-      if (!confirm("履歴・累計正解率・誤答リストをすべて削除しますか？")) return;
+      if (!confirm("履歴・累計正解率・誤答リスト・中断中の進捗をすべて削除しますか？")) return;
       saveStore(emptyStore());
       renderDashboard();
     });
@@ -1153,9 +1325,12 @@
         if (state.mode === "study" && !state.revealed.has(state.index) && selected(state.index).length) checkCurrent();
         else next();
       } else if (e.key === "ArrowLeft") {
-        if (state.index > 0) { state.index -= 1; render(); }
+        if (state.index > 0) { state.index -= 1; saveProgressNow(); render(); }
       } else if (e.key === "ArrowRight") next();
     });
+
+    el("domainCount").addEventListener("change", persistDomainCount);
+    window.addEventListener("beforeunload", saveProgressNow);
 
     renderDashboard();
   </script>
