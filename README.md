@@ -2,12 +2,16 @@
 
 [Microsoft Certified: AI Business Professional (AB-730)](https://learn.microsoft.com/credentials/certifications/ai-business-professional/) 向けの学習用オリジナル問題です。公式試験の再現ではありません。
 
-ブラウザで `index.html` を開くか、GitHub Pages で使えます。
+## ブラウザで開く（こちらが本番の画面）
+
+**https://youka419.github.io/ab-730-practice/**
+
+`github.com` のリポジトリページはソースコードです。`index.html` をクリックしても GitHub 上では 404 やコード表示になり、クイズは動きません。
 
 ## 使い方
 
-- **ローカル:** `index.html` をブラウザで開く（同じフォルダの `questions.js` が必要です）
-- **Web:** リポジトリの GitHub Pages（Settings → Pages で `main` / ルートを公開）
+- **Web:** 上の GitHub Pages の URL を開く
+- **ローカル:** `index.html` をブラウザで開く（同じフォルダの `questions.js` と `questions-extra.js` が必要です）
 
 アプリ右上の **ヘルプ** に、出題モード・履歴・弱点分析・誤答復習の手順があります。
 
