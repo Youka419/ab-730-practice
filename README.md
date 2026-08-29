@@ -16,7 +16,7 @@
 | ファイル | 内容 |
 |---|---|
 | `index.html` | 出題・採点・履歴・ヘルプ |
-| `questions.js` | 50 問（公式 Study Guide 2026年7月22日時点の3領域） |
+| `questions.js` / `questions-extra.js` | 150 問（3 領域 × 50 問。公式 Study Guide 2026年7月22日時点） |
 
 出題順と選択肢は毎回シャッフルされます。正解率・誤答リストは、開いているブラウザの localStorage に保存されます（GitHub には同期されません）。
 

@@ -272,12 +272,12 @@
           <button class="mode" type="button" id="btnExam">
             <strong>試験模擬</strong>
             <em>50問 / 45分</em>
-            <span>本番形式。タイマーあり。解説は採点後に確認できます。</span>
+            <span>3分野から本番配点に近い 50 問を抽出します。タイマーあり。解説は採点後に確認できます。</span>
           </button>
           <button class="mode" type="button" id="btnStudy">
             <strong>学習モード（全問シャッフル）</strong>
             <em>解説つき</em>
-            <span>50問をランダム順で出題します。1問ごとに正誤と解説を表示します。</span>
+            <span>全 150 問（各分野 50 問）をランダム順で出題します。1 問ごとに正誤と解説を表示します。</span>
           </button>
           <button class="mode" type="button" id="btnShuffle">
             <strong>シャッフル 20 問</strong>
@@ -392,7 +392,7 @@
     <section id="help" class="card hidden">
       <div class="hero">
         <h2>ヘルプ — 使い方</h2>
-        <p>AB-730 模擬問題集の操作説明です。出題中でも右上のヘルプから開けます。試験模擬のタイマーは止まりません。</p>
+          <p>3 分野それぞれ 50 問、合計 150 問です。試験模擬は配点に合わせて 50 問を抽出します。</p>
       </div>
       <div class="help-jump">
         <a class="btn" href="#help-start">最初に</a>
@@ -418,10 +418,10 @@
               <tr><th>ボタン</th><th>向いている使い方</th></tr>
             </thead>
             <tbody>
-              <tr><td>試験模擬</td><td>本番と同じく 50 問・45 分。途中では正解を出さない</td></tr>
-              <tr><td>学習モード（全問シャッフル）</td><td>50 問をランダム順。1 問ごとに解説を見る</td></tr>
+              <tr><td>試験模擬</td><td>3 分野から 50 問を抽出・45 分。途中では正解を出さない</td></tr>
+              <tr><td>学習モード（全問シャッフル）</td><td>150 問（各分野 50 問）をランダム順。1 問ごとに解説を見る</td></tr>
               <tr><td>シャッフル 20 問</td><td>全分野から 20 問。短時間の確認</td></tr>
-              <tr><td>分野別出題</td><td>3 つのカードから、その分野だけ解く</td></tr>
+              <tr><td>分野別出題</td><td>3 つのカードから、その分野 50 問だけ解く</td></tr>
               <tr><td>間違えた問題を復習</td><td>今までに間違えた問題だけ再出題。正解するとリストから外れる</td></tr>
               <tr><td>弱点分野を再出題</td><td>累計正解率が一番低い分野を、誤答優先で出題</td></tr>
             </tbody>
@@ -479,6 +479,7 @@
   </div>
 
   <script src="questions.js"></script>
+  <script src="questions-extra.js"></script>
   <script>
     const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     const EXAM_SECONDS = 45 * 60;
@@ -624,6 +625,13 @@
         pool = store.missedIds.map(byId).filter(Boolean);
       } else if (cfg.kind === "sessionMissed") {
         pool = (cfg.ids || []).map(byId).filter(Boolean);
+      } else if (cfg.kind === "exam") {
+        const quotas = { fundamentals: 14, prompts: 20, content: 16 };
+        const picked = [];
+        Object.keys(quotas).forEach((d) => {
+          picked.push(...shuffle(QUESTIONS.filter((q) => q.domain === d)).slice(0, quotas[d]));
+        });
+        return shuffle(picked);
       } else if (cfg.kind === "weak") {
         const weak = cfg.domain || (weakestDomain(store) && weakestDomain(store).key);
         pool = pool.filter((q) => q.domain === weak);
