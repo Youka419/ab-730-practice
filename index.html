@@ -162,6 +162,11 @@
     }
     .explain.show { display: block; }
     .explain b { display: block; margin-bottom: 6px; }
+    .explain .answer {
+      margin: 0 0 10px; padding: 8px 10px; border-radius: 6px;
+      background: var(--ok-bg); color: var(--ok); font-weight: 650;
+    }
+    .explain .answer span { font-weight: 650; margin-right: 6px; }
 
     .nav {
       display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between; align-items: center;
@@ -887,6 +892,10 @@
       return a.length === b.length && a.every((v, n) => v === b[n]);
     }
 
+    function correctAnswerText(q) {
+      return q.answer.map((idx) => `${LETTERS[idx]}. ${q.options[idx]}`).join("　");
+    }
+
     function render() {
       const i = state.index;
       const q = state.items[i];
@@ -923,7 +932,7 @@
       if (reviewing) {
         const ok = isCorrect(i);
         exp.classList.add("show");
-        exp.innerHTML = `<b>${ok ? "正解です" : "不正解です"}</b>${escapeHtml(q.explanation)}`;
+        exp.innerHTML = `<b>${ok ? "正解です" : "不正解です"}</b><p class="answer"><span>正解</span>${escapeHtml(correctAnswerText(q))}</p>${escapeHtml(q.explanation)}`;
       } else {
         exp.classList.remove("show");
         exp.innerHTML = "";
