@@ -80,6 +80,7 @@
     .mode span { grid-column: 1; color: var(--muted); font-size: 13px; line-height: 1.5; }
     .mode em { font-style: normal; color: var(--accent); font-weight: 650; font-size: 13px; }
     .mode.danger em { color: var(--ng); }
+    a.mode { text-decoration: none; color: inherit; }
 
     .domains { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 12px 28px 24px; }
     .dcard {
@@ -253,7 +254,7 @@
         <div class="logo">AB</div>
         <div>
           <h1>AB-730 模擬問題集</h1>
-          <p>Microsoft Certified: AI Business Professional</p>
+          <p>中間レベルの基礎知識編 ＋ 公式模擬への入口</p>
         </div>
       </div>
       <div class="header-actions">
@@ -266,7 +267,7 @@
       <section class="card">
         <div class="hero">
           <h2>学習ダッシュボード</h2>
-          <p>出題順と選択肢は毎回シャッフルされます。正解率は履歴に残り、弱点分野の再出題と誤答復習に使います。手順は右上のヘルプを開いて確認できます。</p>
+          <p>ここにある問題はオリジナルの<strong>基礎知識編</strong>です。公式模擬よりやさしく、単なる用語暗記より難しい、その中間です。本番に近い言い回しは、下の<strong>公式模擬</strong>から Microsoft Learn で確認してください。</p>
         </div>
         <dl class="meta four" id="overviewMeta"></dl>
         <div id="weakCallout"></div>
@@ -274,20 +275,35 @@
 
       <section class="card">
         <div class="sec-title">
-          <h2>出題する</h2>
-          <p>全モードで問題順・選択肢をシャッフル</p>
+          <h2>公式模擬</h2>
+          <p>Microsoft Learn の Practice Assessment</p>
+        </div>
+        <div class="modes">
+          <a class="mode" id="btnOfficial" href="https://learn.microsoft.com/ja-jp/credentials/certifications/ai-business-professional/practice/assessment?assessment-type=practice&amp;assessmentId=650120434&amp;practice-assessment-type=certification" target="_blank" rel="noopener noreferrer">
+            <strong>公式模擬を開く</strong>
+            <em>別ウィンドウ</em>
+            <span>Microsoft アカウントでログインして、公式の練習問題を受験します。問題はこのアプリには取り込みません。成績も公式サイト側に残ります。</span>
+          </a>
+        </div>
+        <p class="note">公式模擬の問題文の転載はできません。公式はシナリオと「似た Copilot 操作」の区別が細かいです。反復練習は下の基礎知識編（中間レベル）、仕上げは公式サイト、と使い分けてください。</p>
+      </section>
+
+      <section class="card">
+        <div class="sec-title">
+          <h2>基礎知識編（中間レベル）</h2>
+          <p>オリジナル 150 問。業務シナリオと近い誤答</p>
         </div>
         <div id="resumeBar"></div>
         <div class="modes">
           <button class="mode" type="button" id="btnExam">
-            <strong>試験模擬</strong>
+            <strong>試験形式</strong>
             <em>50問 / 45分</em>
-            <span>3分野から本番配点に近い 50 問を抽出します。タイマーあり。解説は採点後に確認できます。</span>
+            <span>基礎知識編から、本番配点に近い 50 問を抽出します。タイマーあり。解説は採点後に確認できます。</span>
           </button>
           <button class="mode" type="button" id="btnStudy">
             <strong>学習モード（全問シャッフル）</strong>
             <em>解説つき</em>
-            <span>全 150 問（各分野 50 問）をランダム順で出題します。1 問ごとに正誤と解説を表示します。</span>
+            <span>基礎知識編の 150 問（各分野 50 問）をランダム順で出題します。1 問ごとに正誤と解説を表示します。</span>
           </button>
           <button class="mode" type="button" id="btnShuffle">
             <strong>シャッフル 20 問</strong>
@@ -305,12 +321,12 @@
             <span>累計正解率が最も低い分野を優先し、誤答を先に出します。</span>
           </button>
         </div>
-        <p class="note" style="padding-top:8px">本問題は公式試験の再現ではありません。合格点 700/1000 は簡易換算（正答率 × 1000）です。</p>
+        <p class="note" style="padding-top:8px">基礎知識編は公式試験の再現ではありません。誤答は「あり得ない操作」ではなく、実際に Copilot でできる近い操作を置いています。合格点 700/1000 は簡易換算（正答率 × 1000）です。</p>
       </section>
 
       <section class="card">
         <div class="sec-title">
-          <h2>分野別出題</h2>
+          <h2>分野別出題（基礎知識編）</h2>
           <label class="count-lab">出題数
             <input id="domainCount" type="number" min="1" max="50" value="10" />
             問（1〜50）
@@ -405,9 +421,10 @@
     <section id="help" class="card hidden">
       <div class="hero">
         <h2>ヘルプ — 使い方</h2>
-          <p>3 分野それぞれ 50 問、合計 150 問です。試験模擬は配点に合わせて 50 問を抽出します。</p>
+          <p>基礎知識編は 3 分野それぞれ 50 問、合計 150 問の中間レベルです。公式模擬は Microsoft Learn で別途受験します。</p>
       </div>
       <div class="help-jump">
+        <a class="btn" href="#help-official">公式模擬</a>
         <a class="btn" href="#help-start">最初に</a>
         <a class="btn" href="#help-modes">出題の種類</a>
         <a class="btn" href="#help-solve">解き方</a>
@@ -416,13 +433,21 @@
         <a class="btn" href="#help-flow">おすすめの進め方</a>
       </div>
       <div class="help-body">
+        <h3 id="help-official">公式模擬と基礎知識編</h3>
+        <ul>
+          <li><strong>公式模擬</strong> … ホームのボタンから Microsoft Learn の Practice Assessment を開きます。Microsoft アカウントが必要です。問題はこのアプリにはありません。言い回しと誤答の近さは公式の方が本番に近いです。</li>
+          <li><strong>基礎知識編</strong> … このアプリのオリジナル 150 問（中間レベル）です。業務シナリオを読み、似た Copilot 操作から正しい依頼を選びます。履歴・弱点分析・続きから再開はこちらだけに残ります。</li>
+        </ul>
+        <p>基礎知識編は、公式模擬ほど細かい言い回しは使わず、かといって「あり得ない誤答」だけの簡単問題にもしていません。正解した論点も不正解の論点も、別シナリオで同じ型（短い状況 → 依頼または機能を選ぶ → 近い誤答）で練習できます。</p>
+
         <h3 id="help-start">最初にやること</h3>
         <ol>
-          <li><strong>試験模擬</strong> か <strong>学習モード（全問シャッフル）</strong> を 1 回解く</li>
+          <li>基礎知識編の <strong>学習モード</strong> か <strong>試験形式</strong> を 1 回解く</li>
           <li>結果が <strong>履歴</strong> に残り、分野ごとの正解率が溜まる</li>
           <li>そのあと <strong>間違えた問題を復習</strong> と <strong>弱点分野を再出題</strong> が使える</li>
+          <li>言い回しの確認は <strong>公式模擬を開く</strong> で Microsoft Learn を使う</li>
         </ol>
-        <p>どのモードでも、出題順と選択肢は毎回入れ替わります。</p>
+        <p>基礎知識編では、どのモードでも出題順と選択肢は毎回入れ替わります。</p>
 
         <h3 id="help-modes">出題の種類</h3>
         <div class="hist" style="padding:0">
@@ -431,8 +456,9 @@
               <tr><th>ボタン</th><th>向いている使い方</th></tr>
             </thead>
             <tbody>
-              <tr><td>試験模擬</td><td>3 分野から 50 問を抽出・45 分。途中では正解を出さない</td></tr>
-              <tr><td>学習モード（全問シャッフル）</td><td>150 問（各分野 50 問）をランダム順。1 問ごとに解説を見る</td></tr>
+              <tr><td>公式模擬を開く</td><td>Microsoft Learn の公式練習。ログインして別ウィンドウで受験する</td></tr>
+              <tr><td>試験形式</td><td>基礎知識編から 50 問を抽出・45 分。途中では正解を出さない</td></tr>
+              <tr><td>学習モード（全問シャッフル）</td><td>基礎知識編 150 問をランダム順。1 問ごとに解説を見る</td></tr>
               <tr><td>シャッフル 20 問</td><td>全分野から 20 問。短時間の確認</td></tr>
               <tr><td>分野別出題</td><td>出題数を 1〜50 で指定し、その分野だけ解く。途中でやめても続きから再開できる</td></tr>
               <tr><td>間違えた問題を復習</td><td>今までに間違えた問題だけ再出題。正解するとリストから外れる</td></tr>
@@ -448,8 +474,8 @@
           <li><strong>次へ / 前へ</strong> … 問題の行き来</li>
           <li><strong>フラグ</strong> … あとで見直したい問題に印</li>
           <li>下の番号マスで、任意の問題にジャンプ</li>
-          <li><strong>ホームへ</strong> で中断すると進捗が保存され、全体（学習・試験模擬）も分野別も続きから再開できる</li>
-          <li>最後の問題で <strong>結果を見る</strong>（試験模擬は <strong>終了して採点</strong>）</li>
+          <li><strong>ホームへ</strong> で中断すると進捗が保存され、基礎知識編の全体（学習・試験形式）も分野別も続きから再開できる</li>
+          <li>最後の問題で <strong>結果を見る</strong>（試験形式は <strong>終了して採点</strong>）</li>
         </ul>
         <p>キーボード：<span class="kbd">1</span>〜<span class="kbd">4</span> で選択、<span class="kbd">Enter</span> で確認または次へ、矢印キーで前後です。</p>
 
@@ -472,13 +498,14 @@
 
         <h3 id="help-flow">おすすめの進め方</h3>
         <ol>
-          <li>まず <strong>学習モード</strong> で全体をつかむ</li>
-          <li><strong>試験模擬</strong> で時間配分を試す</li>
+          <li>まず基礎知識編の <strong>学習モード</strong> で全体をつかむ</li>
+          <li><strong>試験形式</strong> で時間配分を試す</li>
           <li>履歴で弱い分野を確認し、<strong>弱点分野を再出題</strong></li>
           <li><strong>間違えた問題を復習</strong> が 0 問になるまで繰り返す</li>
-          <li>直前は <strong>シャッフル 20 問</strong> か <strong>試験模擬</strong></li>
+          <li>言い回しの確認は <strong>公式模擬を開く</strong></li>
+          <li>直前は基礎知識編の <strong>シャッフル 20 問</strong> か <strong>試験形式</strong>、あわせて公式模擬</li>
         </ol>
-        <p>公式試験そのものではなく、出題範囲に合わせた練習用です。</p>
+        <p>基礎知識編は公式試験の再現ではありません。出題範囲に合わせた中間レベルの練習用です。仕上げは公式模擬で言い回しを確認してください。</p>
       </div>
       <div class="nav">
         <span></span>
@@ -487,8 +514,8 @@
     </section>
 
     <footer>
-      出題範囲は Microsoft Learn の Exam AB-730 Study Guide（2026年7月22日時点）に準拠した学習用オリジナル問題です。<br />
-      Microsoft の公式模擬試験ではありません。商標は各権利者に帰属します。記録はこのブラウザの localStorage に保存されます。
+      基礎知識編は中間レベルの学習用オリジナル問題です。出題範囲は Microsoft Learn の Exam AB-730 Study Guide（2026年7月22日時点）に準拠しています。<br />
+      公式模擬は Microsoft Learn 上で受験してください。商標は各権利者に帰属します。このアプリの記録はブラウザの localStorage に保存されます。
     </footer>
   </div>
 
@@ -505,8 +532,8 @@
       content: { label: "ビジネスコンテンツ", weight: "25–30%" }
     };
     const MODE_LABELS = {
-      exam: "試験模擬",
-      study: "学習（全問）",
+      exam: "基礎知識編・試験形式",
+      study: "基礎知識編（学習）",
       shuffle: "シャッフル20問",
       domain: "分野別",
       weak: "弱点再出題",
@@ -1165,10 +1192,10 @@
       const studyP = getProgress("study");
       const examP = getProgress("exam");
       if (studyP) {
-        resumeBits.push(`<button class="mode" type="button" id="btnResumeStudy"><strong>全体の続きから（学習）</strong><em>${(studyP.index || 0) + 1} / ${studyP.items.length}</em><span>中断した学習モードを、同じ問題順・同じ選択肢のまま再開します。</span></button>`);
+        resumeBits.push(`<button class="mode" type="button" id="btnResumeStudy"><strong>基礎知識編の続きから（学習）</strong><em>${(studyP.index || 0) + 1} / ${studyP.items.length}</em><span>中断した学習モードを、同じ問題順・同じ選択肢のまま再開します。</span></button>`);
       }
       if (examP) {
-        resumeBits.push(`<button class="mode" type="button" id="btnResumeExam"><strong>全体の続きから（試験模擬）</strong><em>${(examP.index || 0) + 1} / ${examP.items.length}</em><span>中断した試験模擬を、残り時間つきで再開します。</span></button>`);
+        resumeBits.push(`<button class="mode" type="button" id="btnResumeExam"><strong>基礎知識編の続きから（試験形式）</strong><em>${(examP.index || 0) + 1} / ${examP.items.length}</em><span>中断した試験形式を、残り時間つきで再開します。</span></button>`);
       }
       el("resumeBar").innerHTML = resumeBits.join("");
       if (el("btnResumeStudy")) el("btnResumeStudy").addEventListener("click", () => resumeFrom("study"));
@@ -1224,7 +1251,7 @@
 
       el("histCount").textContent = hist.length ? `直近 ${Math.min(hist.length, 50)} 回` : "まだ受験がありません";
       if (!hist.length) {
-        el("histTable").innerHTML = `<p class="empty-hint" style="padding:8px 0 0">試験模擬・学習・分野別・シャッフルの結果がここに残り、正解率が累計分析へ反映されます。</p>`;
+        el("histTable").innerHTML = `<p class="empty-hint" style="padding:8px 0 0">基礎知識編の試験形式・学習・分野別・シャッフルの結果がここに残り、正解率が累計分析へ反映されます。公式模擬の成績は Microsoft Learn 側です。</p>`;
       } else {
         el("histTable").innerHTML = `<table>
           <thead><tr><th>日時</th><th>モード</th><th>正答率</th><th>スコア</th><th>内訳</th></tr></thead>
@@ -1277,8 +1304,8 @@
         .replace(/"/g, "&quot;");
     }
 
-    el("btnExam").addEventListener("click", () => start({ kind: "exam", label: "試験模擬", feedback: "exam" }));
-    el("btnStudy").addEventListener("click", () => start({ kind: "study", label: "学習（全問シャッフル）", feedback: "study" }));
+    el("btnExam").addEventListener("click", () => start({ kind: "exam", label: "基礎知識編・試験形式", feedback: "exam" }));
+    el("btnStudy").addEventListener("click", () => start({ kind: "study", label: "基礎知識編（全問シャッフル）", feedback: "study" }));
     el("btnShuffle").addEventListener("click", () => start({ kind: "shuffle", label: "シャッフル20問", feedback: "study", limit: 20 }));
     el("btnMissed").addEventListener("click", () => start({ kind: "missed", label: "誤答復習", feedback: "study" }));
     el("btnWeak").addEventListener("click", () => start({ kind: "weak", label: "弱点再出題", feedback: "study" }));
