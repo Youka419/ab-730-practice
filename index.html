@@ -244,6 +244,45 @@
     .hidden { display: none !important; }
     footer { margin-top: 8px; color: var(--muted); font-size: 11px; line-height: 1.6; text-align: center; }
 
+    .user-chip {
+      font-size: 12px; color: var(--muted); max-width: 140px; overflow: hidden;
+      text-overflow: ellipsis; white-space: nowrap;
+    }
+    .auth-card { max-width: 420px; margin: 0 auto 16px; }
+    .auth-card .hero { padding-bottom: 8px; }
+    .auth-form { display: grid; gap: 12px; padding: 8px 28px 24px; }
+    .field { display: grid; gap: 6px; }
+    .field label { font-size: 12px; font-weight: 650; color: var(--muted); }
+    .field input, .field select {
+      border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px;
+      font-size: 15px; background: #fff; color: var(--text);
+    }
+    .field input:focus, .field select:focus {
+      outline: 2px solid var(--accent-soft); border-color: var(--accent);
+    }
+    .auth-error {
+      display: none; margin: 0 28px 8px; padding: 10px 12px; border-radius: 6px;
+      background: var(--ng-bg); color: var(--ng); font-size: 13px; line-height: 1.5;
+    }
+    .auth-error.show { display: block; }
+    .auth-links {
+      display: flex; flex-wrap: wrap; gap: 8px 16px; padding: 0 28px 24px;
+      font-size: 13px;
+    }
+    .auth-links button {
+      border: 0; background: none; color: var(--accent); padding: 0; font-weight: 650;
+    }
+    .auth-links button:hover { text-decoration: underline; }
+    .auth-note { padding: 0 28px 20px; font-size: 13px; color: var(--muted); line-height: 1.7; }
+    .auth-help {
+      margin: 0 28px 20px; padding: 14px 16px; border-radius: 8px;
+      background: var(--accent-soft); border: 1px solid #b4d6f3;
+      font-size: 13px; line-height: 1.7; color: var(--text);
+    }
+    .auth-help b { display: block; margin-bottom: 6px; }
+    .auth-help ol { margin: 6px 0 10px; padding-left: 1.3em; }
+    .auth-help li { margin: 4px 0; }
+
     @media (max-width: 720px) {
       .meta, .meta.four, .stats, .domains { grid-template-columns: 1fr; }
       .hero, .qwrap, .nav { padding-left: 16px; padding-right: 16px; }
@@ -263,12 +302,108 @@
         </div>
       </div>
       <div class="header-actions">
+        <span class="user-chip hidden" id="userChip"></span>
+        <button class="btn hidden" type="button" id="btnLogout">ログアウト</button>
         <button class="btn" type="button" id="btnHelp">ヘルプ</button>
         <button class="btn ghost hidden" id="btnHome" type="button">ホームへ</button>
       </div>
     </header>
 
-    <div id="home">
+    <section id="auth" class="card auth-card">
+      <div class="hero">
+        <h2 id="authTitle">ログイン</h2>
+        <p id="authLead">ID とパスワードで、自分の履歴だけを残します。このブラウザ内だけのアカウントです。</p>
+      </div>
+      <div class="auth-error" id="authError"></div>
+
+      <form class="auth-form" id="formLogin">
+        <div class="field">
+          <label for="loginId">ID</label>
+          <input id="loginId" name="username" autocomplete="username" required maxlength="24" />
+        </div>
+        <div class="field">
+          <label for="loginPw">パスワード</label>
+          <input id="loginPw" name="password" type="password" autocomplete="current-password" required />
+        </div>
+        <button class="btn primary" type="submit">ログイン</button>
+      </form>
+
+      <form class="auth-form hidden" id="formRegister">
+        <div class="field">
+          <label for="regId">ID（2〜24文字）</label>
+          <input id="regId" name="username" autocomplete="username" required minlength="2" maxlength="24" />
+        </div>
+        <div class="field">
+          <label for="regPw">パスワード（8文字以上）</label>
+          <input id="regPw" name="new-password" type="password" autocomplete="new-password" required minlength="8" />
+        </div>
+        <div class="field">
+          <label for="regPw2">パスワード（確認）</label>
+          <input id="regPw2" type="password" autocomplete="new-password" required minlength="8" />
+        </div>
+        <div class="field">
+          <label for="regQ">秘密の質問（パスワード再設定用）</label>
+          <select id="regQ" required>
+            <option value="pet">初めて飼ったペットの名前は？</option>
+            <option value="city">生まれた街・市町村は？</option>
+            <option value="food">子どものころ好きだった食べ物は？</option>
+            <option value="school">小学校の名前は？</option>
+            <option value="word">自分で決めた合言葉は？</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="regA">秘密の質問の答え</label>
+          <input id="regA" autocomplete="off" required maxlength="80" />
+        </div>
+        <button class="btn primary" type="submit">アカウントを作成</button>
+      </form>
+
+      <form class="auth-form hidden" id="formReset">
+        <div class="field">
+          <label for="resetId">ID</label>
+          <input id="resetId" autocomplete="username" required maxlength="24" />
+        </div>
+        <div class="field">
+          <label for="resetQ">秘密の質問</label>
+          <select id="resetQ" required>
+            <option value="pet">初めて飼ったペットの名前は？</option>
+            <option value="city">生まれた街・市町村は？</option>
+            <option value="food">子どものころ好きだった食べ物は？</option>
+            <option value="school">小学校の名前は？</option>
+            <option value="word">自分で決めた合言葉は？</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="resetA">秘密の質問の答え</label>
+          <input id="resetA" autocomplete="off" required maxlength="80" />
+        </div>
+        <div class="field">
+          <label for="resetPw">新しいパスワード（8文字以上）</label>
+          <input id="resetPw" type="password" autocomplete="new-password" required minlength="8" />
+        </div>
+        <div class="field">
+          <label for="resetPw2">新しいパスワード（確認）</label>
+          <input id="resetPw2" type="password" autocomplete="new-password" required minlength="8" />
+        </div>
+        <button class="btn primary" type="submit">パスワードを再設定</button>
+      </form>
+
+      <div class="auth-links" id="authLinks"></div>
+      <div class="auth-help hidden" id="resetHint">
+        <b>秘密の質問が合わないとき</b>
+        <p style="margin:0 0 8px">メールでのリセットはありません。次の順で試してください。</p>
+        <ol>
+          <li>登録したときの<strong>質問の種類</strong>を、5つの中から選び直す</li>
+          <li>答えを、登録したときの書き方に近づける（スペース・ひらがな／カタカナ）</li>
+          <li>元のパスワードを思い出せたら、ログイン画面に戻る</li>
+          <li>どうしても分からないときは、新しい ID で登録し直す（古い履歴は引き継がれません）</li>
+        </ol>
+        <button class="btn" type="button" id="btnResetHelp">ヘルプで手順を見る</button>
+      </div>
+      <p class="auth-note" id="authNote">メールは使いません。記録はこの端末のこのブラウザだけに残ります。</p>
+    </section>
+
+    <div id="home" class="hidden">
       <section class="card">
         <div class="hero">
           <h2>学習ダッシュボード</h2>
@@ -430,6 +565,8 @@
       </div>
       <div class="help-jump">
         <a class="btn" href="#help-official">公式模擬</a>
+        <a class="btn" href="#help-account">アカウント</a>
+        <a class="btn" href="#help-reset">パスワードを忘れた</a>
         <a class="btn" href="#help-start">最初に</a>
         <a class="btn" href="#help-modes">出題の種類</a>
         <a class="btn" href="#help-solve">解き方</a>
@@ -445,14 +582,36 @@
         </ul>
         <p>基礎知識編は、公式模擬ほど細かい言い回しは使わず、かといって「あり得ない誤答」だけの簡単問題にもしていません。正解した論点も不正解の論点も、別シナリオで同じ型（短い状況 → 依頼または機能を選ぶ → 近い誤答）で練習できます。</p>
 
+        <h3 id="help-account">アカウント（ログイン）</h3>
+        <p>このアプリは、Microsoft のログインではありません。ご家庭の同じパソコンを、何人かで使うための簡単な仕組みです。記録は、今お使いのパソコンの、今お使いのブラウザだけに残ります。</p>
+        <ul>
+          <li><strong>新規登録</strong> … 自分用の ID、パスワード（8文字以上）、秘密の質問と答えを決めます</li>
+          <li><strong>ログイン</strong> … 自分の ID で入ると、自分の履歴・間違えた問題・続きから再開だけが見えます</li>
+          <li><strong>ログアウト</strong> … 画面右上です。次の人が使う前に押してください</li>
+        </ul>
+        <p>別のパソコンや、別のブラウザ（例：Edge と Chrome）には、自動では移りません。</p>
+
+        <h3 id="help-reset">パスワードを忘れたとき・秘密の質問が合わないとき</h3>
+        <p>ログイン画面の <strong>パスワードを忘れた場合</strong> を押すと、再設定の画面になります。メールは届きません。登録したときに決めた<strong>秘密の質問</strong>に答えると、新しいパスワードを付けられます。</p>
+        <p><strong>うまくいかないときは、焦らず次の順で試してください。</strong></p>
+        <ol>
+          <li><strong>ID を確認する</strong><br />大文字と小文字は区別しませんが、違う名前（例：hana と hana1）だと別の人になります。</li>
+          <li><strong>質問の種類を選び直す</strong><br />秘密の質問は 5 種類あります。登録したときと<strong>同じ質問</strong>を選んでください。質問が違うと、答えが正しくても通りません。</li>
+          <li><strong>答えの書き方を変えてみる</strong><br />スペースの有無、全角と半角、ひらがなとカタカナは、別の答えとして扱います。登録したときの書き方に近づけてください。</li>
+          <li><strong>元のパスワードを思い出してみる</strong><br />パスワードが分かるなら、再設定は不要です。ログイン画面に戻って入ってください。</li>
+          <li><strong>どうしても分からないとき</strong><br />このアプリには、運営がパスワードを直す窓口はありません。新しい ID で登録し直してください。古い ID の履歴は、パスワードか秘密の質問が分かるまで、その ID に残ったままです。新しい ID には引き継がれません。</li>
+        </ol>
+        <p>登録するときは、あとから思い出しやすい答えにして、紙やメモアプリに残しておくと安心です。秘密の質問の答えは、他人に教えないでください。</p>
+
         <h3 id="help-start">最初にやること</h3>
         <ol>
+          <li><strong>新規登録</strong> で ID・パスワードと秘密の質問を作る（2人目以降も同じ）</li>
           <li>基礎知識編の <strong>学習モード</strong> か <strong>試験形式</strong> を 1 回解く</li>
-          <li>結果が <strong>履歴</strong> に残り、分野ごとの正解率が溜まる</li>
+          <li>結果が <strong>その人の履歴</strong> に残り、分野ごとの正解率が溜まる</li>
           <li>そのあと <strong>間違えた問題を復習</strong> と <strong>弱点分野を再出題</strong> が使える</li>
           <li>言い回しの確認は <strong>公式模擬を開く</strong> で Microsoft Learn を使う</li>
         </ol>
-        <p>基礎知識編では、どのモードでも出題順と選択肢は毎回入れ替わります。</p>
+        <p>基礎知識編では、どのモードでも出題順と選択肢は毎回入れ替わります。履歴はログイン中の ID ごとに分かれます。</p>
 
         <h3 id="help-modes">出題の種類</h3>
         <div class="hist" style="padding:0">
@@ -499,7 +658,7 @@
           <li><strong>弱点分野の分析</strong> … 3 分野の累計正解率。低い分野に「弱点」と出る</li>
           <li><strong>履歴</strong> … 日時、モード、正答率、スコア、分野ごとの内訳</li>
         </ul>
-        <p>記録はこの PC のこのブラウザだけに残ります。消すときは履歴の <strong>履歴を削除</strong> です。</p>
+        <p>記録はこの PC のこのブラウザだけに残ります。人ごとに ID で分かれます。消すときは履歴の <strong>履歴を削除</strong>（今ログインしている人だけ）です。パスワードを忘れたときの手順は、上の <a href="#help-reset">パスワードを忘れたとき</a> にあります。</p>
 
         <h3 id="help-flow">おすすめの進め方</h3>
         <ol>
@@ -520,7 +679,7 @@
 
     <footer>
       基礎知識編は中間レベルの学習用オリジナル問題です。出題範囲は Microsoft Learn の Exam AB-730 Study Guide（2026年7月22日時点）に準拠しています。<br />
-      公式模擬は Microsoft Learn 上で受験してください。商標は各権利者に帰属します。このアプリの記録はブラウザの localStorage に保存されます。
+      公式模擬は Microsoft Learn 上で受験してください。商標は各権利者に帰属します。このアプリの記録はブラウザの localStorage に、ログイン中の ID ごとに保存されます。
     </footer>
   </div>
 
@@ -531,6 +690,15 @@
     const EXAM_SECONDS = 45 * 60;
     const PASS = 700;
     const STORE_KEY = "ab730-progress-v2";
+    const AUTH_KEY = "ab730-auth-v1";
+    const SESSION_KEY = "ab730-session-v1";
+    const RECOVERY_Q = {
+      pet: "初めて飼ったペットの名前は？",
+      city: "生まれた街・市町村は？",
+      food: "子どものころ好きだった食べ物は？",
+      school: "小学校の名前は？",
+      word: "自分で決めた合言葉は？"
+    };
     const DOMAIN_META = {
       fundamentals: { label: "生成 AI の基礎", weight: "25–30%" },
       prompts: { label: "プロンプトと会話", weight: "35–40%" },
@@ -550,6 +718,7 @@
     const quiz = el("quiz");
     const result = el("result");
     const help = el("help");
+    const auth = el("auth");
 
     const state = {
       mode: "study",
@@ -567,6 +736,7 @@
       lastWrongIds: [],
       lastWeakDomain: null,
       helpReturn: "home",
+      lastAuthView: "login",
       completed: false
     };
 
@@ -574,9 +744,97 @@
       return { history: [], questionStats: {}, missedIds: [], inProgress: {}, settings: { domainCount: 10 } };
     }
 
-    function loadStore() {
+    function emptyAuth() {
+      return { users: {} };
+    }
+
+    function normalizeId(raw) {
+      return String(raw || "").trim();
+    }
+
+    function idKey(raw) {
+      return normalizeId(raw).toLowerCase();
+    }
+
+    function normalizeAnswer(raw) {
+      return String(raw || "").trim().toLowerCase().replace(/\s+/g, "");
+    }
+
+    function bytesToHex(buf) {
+      return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, "0")).join("");
+    }
+
+    function randomSalt() {
+      const a = new Uint8Array(16);
+      crypto.getRandomValues(a);
+      return bytesToHex(a);
+    }
+
+    async function sha256Hex(text) {
+      const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+      return bytesToHex(buf);
+    }
+
+    async function hashSecret(secret, salt) {
+      return sha256Hex(salt + "\0" + secret);
+    }
+
+    function loadAuth() {
       try {
-        const raw = localStorage.getItem(STORE_KEY);
+        const raw = localStorage.getItem(AUTH_KEY);
+        if (!raw) return emptyAuth();
+        const data = JSON.parse(raw);
+        return { users: data.users && typeof data.users === "object" ? data.users : {} };
+      } catch (_) {
+        return emptyAuth();
+      }
+    }
+
+    function saveAuth(authData) {
+      try { localStorage.setItem(AUTH_KEY, JSON.stringify(authData)); } catch (_) {}
+    }
+
+    function currentUserId() {
+      try {
+        const s = JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
+        if (!s || !s.id) return null;
+        const users = loadAuth().users;
+        return users[idKey(s.id)] ? users[idKey(s.id)].id : null;
+      } catch (_) {
+        return null;
+      }
+    }
+
+    function setSession(userId) {
+      try { localStorage.setItem(SESSION_KEY, JSON.stringify({ id: userId })); } catch (_) {}
+    }
+
+    function clearSession() {
+      try { localStorage.removeItem(SESSION_KEY); } catch (_) {}
+    }
+
+    function progressStoreKey() {
+      const id = currentUserId();
+      return id ? STORE_KEY + ":" + encodeURIComponent(idKey(id)) : null;
+    }
+
+    function migrateLegacyIfNeeded(userId) {
+      try {
+        const destKey = STORE_KEY + ":" + encodeURIComponent(idKey(userId));
+        if (localStorage.getItem(destKey)) return;
+        const legacy = localStorage.getItem(STORE_KEY);
+        if (!legacy) return;
+        const authData = loadAuth();
+        if (Object.keys(authData.users).length !== 1) return;
+        localStorage.setItem(destKey, legacy);
+      } catch (_) {}
+    }
+
+    function loadStore() {
+      const key = progressStoreKey();
+      if (!key) return emptyStore();
+      try {
+        const raw = localStorage.getItem(key);
         if (!raw) return emptyStore();
         const data = JSON.parse(raw);
         const empty = emptyStore();
@@ -593,7 +851,9 @@
     }
 
     function saveStore(store) {
-      try { localStorage.setItem(STORE_KEY, JSON.stringify(store)); } catch (_) {}
+      const key = progressStoreKey();
+      if (!key) return;
+      try { localStorage.setItem(key, JSON.stringify(store)); } catch (_) {}
     }
 
     function clampCount(n) {
@@ -786,7 +1046,141 @@
       return pool;
     }
 
+    function showAuthError(msg) {
+      const box = el("authError");
+      if (!msg) {
+        box.classList.remove("show");
+        box.textContent = "";
+        return;
+      }
+      box.textContent = msg;
+      box.classList.add("show");
+    }
+
+    function setAuthView(view) {
+      state.lastAuthView = view;
+      el("formLogin").classList.toggle("hidden", view !== "login");
+      el("formRegister").classList.toggle("hidden", view !== "register");
+      el("formReset").classList.toggle("hidden", view !== "reset");
+      el("resetHint").classList.toggle("hidden", view !== "reset");
+      showAuthError("");
+      const titles = {
+        login: ["ログイン", "ID とパスワードで、自分の履歴だけを残します。このブラウザ内だけのアカウントです。"],
+        register: ["新規登録", "ID・パスワードと、忘れたとき用の秘密の質問を設定します。答えはあとから思い出せるものにしてください。"],
+        reset: ["パスワードの再設定", "登録したときの秘密の質問に答えると、新しいパスワードを付けられます。メールは届きません。"]
+      };
+      const notes = {
+        login: "記録はこの端末のこのブラウザだけに残ります。パスワードを忘れたときは「パスワードを忘れた場合」から再設定できます。",
+        register: "秘密の質問の答えは、スペースやカタカナの違いも別の答えになります。あとで困らないよう、メモしておくと安心です。",
+        reset: "質問の種類が違うと、答えが正しくても通りません。分からないときは、下の案内とヘルプを見てください。"
+      };
+      el("authTitle").textContent = titles[view][0];
+      el("authLead").textContent = titles[view][1];
+      el("authNote").textContent = notes[view];
+      const links = [];
+      if (view !== "login") links.push(`<button type="button" data-auth="login">ログインへ戻る</button>`);
+      if (view !== "register") links.push(`<button type="button" data-auth="register">新規登録</button>`);
+      if (view !== "reset") links.push(`<button type="button" data-auth="reset">パスワードを忘れた場合</button>`);
+      el("authLinks").innerHTML = links.join("");
+      el("authLinks").querySelectorAll("[data-auth]").forEach((btn) => {
+        btn.addEventListener("click", () => setAuthView(btn.dataset.auth));
+      });
+    }
+
+    function updateUserChrome() {
+      const id = currentUserId();
+      const chip = el("userChip");
+      const logout = el("btnLogout");
+      if (id) {
+        chip.textContent = id;
+        chip.title = id;
+        chip.classList.remove("hidden");
+        logout.classList.remove("hidden");
+      } else {
+        chip.classList.add("hidden");
+        logout.classList.add("hidden");
+      }
+    }
+
+    function showLoginScreen(view) {
+      stopTimer();
+      quiz.classList.add("hidden");
+      result.classList.add("hidden");
+      help.classList.add("hidden");
+      home.classList.add("hidden");
+      auth.classList.remove("hidden");
+      el("btnHome").classList.add("hidden");
+      el("btnHelp").classList.remove("hidden");
+      updateUserChrome();
+      setAuthView(view || state.lastAuthView || "login");
+    }
+
+    function enterApp() {
+      auth.classList.add("hidden");
+      updateUserChrome();
+      goHome();
+    }
+
+    async function registerUser(idRaw, password, password2, qKey, answer) {
+      const id = normalizeId(idRaw);
+      if (id.length < 2 || id.length > 24) return "ID は 2〜24 文字にしてください。";
+      if (password.length < 8) return "パスワードは 8 文字以上にしてください。";
+      if (password !== password2) return "パスワード（確認）が一致しません。";
+      if (!RECOVERY_Q[qKey]) return "秘密の質問を選んでください。";
+      if (!normalizeAnswer(answer)) return "秘密の質問の答えを入力してください。";
+      const authData = loadAuth();
+      if (authData.users[idKey(id)]) return "その ID はすでに使われています。";
+      const pwSalt = randomSalt();
+      const recSalt = randomSalt();
+      authData.users[idKey(id)] = {
+        id,
+        salt: pwSalt,
+        passwordHash: await hashSecret(password, pwSalt),
+        recoveryQ: qKey,
+        recoverySalt: recSalt,
+        recoveryHash: await hashSecret(normalizeAnswer(answer), recSalt),
+        createdAt: Date.now()
+      };
+      saveAuth(authData);
+      setSession(id);
+      migrateLegacyIfNeeded(id);
+      return "";
+    }
+
+    async function loginUser(idRaw, password) {
+      const id = normalizeId(idRaw);
+      if (!id || !password) return "ID とパスワードを入力してください。";
+      const user = loadAuth().users[idKey(id)];
+      if (!user) return "ID またはパスワードが正しくありません。";
+      const hash = await hashSecret(password, user.salt);
+      if (hash !== user.passwordHash) return "ID またはパスワードが正しくありません。";
+      setSession(user.id);
+      return "";
+    }
+
+    async function resetPassword(idRaw, qKey, answer, password, password2) {
+      const id = normalizeId(idRaw);
+      if (!id) return "ID を入力してください。";
+      const user = loadAuth().users[idKey(id)];
+      if (!user) return "ID または秘密の質問が合わないようです。登録したときの質問を選び直し、答えの書き方（ひらがな・カタカナ・スペース）も確認してください。詳しい手順はヘルプにあります。";
+      if (user.recoveryQ !== qKey) return "秘密の質問の種類が、登録したときと違うようです。5つの中から、当時選んだ質問をもう一度選んでください。";
+      const recHash = await hashSecret(normalizeAnswer(answer), user.recoverySalt);
+      if (recHash !== user.recoveryHash) return "答えが合わないようです。スペースの有無や、ひらがな／カタカナを変えて試してください。どうしても分からないときは、ヘルプの「パスワードを忘れたとき」をご覧ください。";
+      if (password.length < 8) return "パスワードは 8 文字以上にしてください。";
+      if (password !== password2) return "パスワード（確認）が一致しません。";
+      const pwSalt = randomSalt();
+      const authData = loadAuth();
+      authData.users[idKey(id)].salt = pwSalt;
+      authData.users[idKey(id)].passwordHash = await hashSecret(password, pwSalt);
+      saveAuth(authData);
+      return "";
+    }
+
     function start(cfg) {
+      if (!currentUserId()) {
+        showLoginScreen();
+        return;
+      }
       const store = loadStore();
       stopTimer();
 
@@ -1127,30 +1521,51 @@
     }
 
     function goHome() {
+      if (!currentUserId()) {
+        showLoginScreen();
+        return;
+      }
       saveProgressNow();
       stopTimer();
       quiz.classList.add("hidden");
       result.classList.add("hidden");
       help.classList.add("hidden");
+      auth.classList.add("hidden");
       home.classList.remove("hidden");
       el("btnHome").classList.add("hidden");
       el("btnHelp").classList.remove("hidden");
+      updateUserChrome();
       renderDashboard();
     }
 
-    function showHelp() {
+    function showHelp(sectionId) {
       saveProgressNow();
-      if (!help.classList.contains("hidden")) return;
+      if (!help.classList.contains("hidden")) {
+        if (sectionId) {
+          const t = document.getElementById(sectionId);
+          if (t) t.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+        return;
+      }
       if (!quiz.classList.contains("hidden")) state.helpReturn = "quiz";
       else if (!result.classList.contains("hidden")) state.helpReturn = "result";
+      else if (!auth.classList.contains("hidden")) {
+        state.helpReturn = "auth";
+        if (!sectionId && state.lastAuthView === "reset") sectionId = "help-reset";
+      }
       else state.helpReturn = "home";
       home.classList.add("hidden");
       quiz.classList.add("hidden");
       result.classList.add("hidden");
+      auth.classList.add("hidden");
       help.classList.remove("hidden");
       el("btnHome").classList.remove("hidden");
       el("btnHelp").classList.add("hidden");
       window.scrollTo(0, 0);
+      if (sectionId) {
+        const t = document.getElementById(sectionId);
+        if (t) setTimeout(() => t.scrollIntoView({ behavior: "smooth", block: "start" }), 0);
+      }
     }
 
     function closeHelp() {
@@ -1162,6 +1577,8 @@
       } else if (state.helpReturn === "result") {
         result.classList.remove("hidden");
         el("btnHome").classList.remove("hidden");
+      } else if (state.helpReturn === "auth" || !currentUserId()) {
+        showLoginScreen(state.lastAuthView || "login");
       } else {
         home.classList.remove("hidden");
         el("btnHome").classList.add("hidden");
@@ -1345,7 +1762,8 @@
       start({ kind: "weak", domain: d, label: "弱点再出題", feedback: "study" });
     });
     el("btnClearHist").addEventListener("click", () => {
-      if (!confirm("履歴・累計正解率・誤答リスト・中断中の進捗をすべて削除しますか？")) return;
+      const who = currentUserId() || "このアカウント";
+      if (!confirm(who + " の履歴・累計正解率・誤答リスト・中断中の進捗を削除しますか？他の人の記録は消えません。")) return;
       saveStore(emptyStore());
       renderDashboard();
     });
@@ -1368,7 +1786,45 @@
     el("domainCount").addEventListener("change", persistDomainCount);
     window.addEventListener("beforeunload", saveProgressNow);
 
-    renderDashboard();
+    el("formLogin").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const err = await loginUser(el("loginId").value, el("loginPw").value);
+      if (err) { showAuthError(err); return; }
+      el("loginPw").value = "";
+      enterApp();
+    });
+    el("formRegister").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const err = await registerUser(el("regId").value, el("regPw").value, el("regPw2").value, el("regQ").value, el("regA").value);
+      if (err) { showAuthError(err); return; }
+      el("regPw").value = "";
+      el("regPw2").value = "";
+      el("regA").value = "";
+      enterApp();
+    });
+    el("formReset").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const err = await resetPassword(el("resetId").value, el("resetQ").value, el("resetA").value, el("resetPw").value, el("resetPw2").value);
+      if (err) { showAuthError(err); return; }
+      el("resetA").value = "";
+      el("resetPw").value = "";
+      el("resetPw2").value = "";
+      showAuthError("");
+      setAuthView("login");
+      el("loginId").value = el("resetId").value;
+      alert("パスワードを再設定しました。新しいパスワードでログインしてください。");
+    });
+    el("btnLogout").addEventListener("click", () => {
+      saveProgressNow();
+      stopTimer();
+      clearSession();
+      showLoginScreen("login");
+    });
+    el("btnResetHelp").addEventListener("click", () => showHelp("help-reset"));
+
+    setAuthView("login");
+    if (currentUserId()) enterApp();
+    else showLoginScreen();
   </script>
 </body>
 </html>
